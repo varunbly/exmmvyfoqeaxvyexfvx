@@ -1,10 +1,10 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return "Varun is great"
+    return render_template('index.html')
 
 @app.route("/greet", methods=["POST"])
 def greet():

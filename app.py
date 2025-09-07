@@ -1,10 +1,21 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, url_for
 
 app = Flask(__name__)
 
 @app.route("/")
 def home():
     return render_template('index.html')
+
+@app.route('/<int:number>')
+def level_1(number):
+    target = 69
+    if(number < target):
+        return render_template("level_1_l.html", number = number)
+    elif(number > target):
+        return render_template("level_1_h.html", number = number)
+    else:
+        return render_template("level_1_t.html", number = number)
+
 
 @app.route("/greet", methods=["POST"])
 def greet():

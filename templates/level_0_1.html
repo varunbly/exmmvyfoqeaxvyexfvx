@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block head %}
+{% endblock %}
+
+{% block body %}
+<div class="full-screen">
+    <div class="column center">
+        <div class = "row center">
+            <div class = "column hover-group hidden-text visible center">
+                <h1>The young man was found hanging in his dorm room late last night</h1>
+                <h1 class="vanishing insane trigger" target="entry2">
+                    What the hell?!
+                </h1>
+            </div>
+            <div id="entry2" class="column hover-group hidden-text center">
+                <h1>Authorities suspect overwhelming academic pressure as the primary cause.</h1>
+                <h1 class="vanishing insane trigger" target="entry3">
+                    Nonsense
+                </h1>
+            </div>
+        </div>
+        <div class="row center">
+            <div id="entry4" class="column hover-group hidden-text center">
+                <h1>The investigation has been officially closed.</h1>
+                <h1 class="vanishing insane trigger" target="entry5">
+                    Liar
+                </h1>
+            </div>
+        </div>
+        <div class="row center">
+            <div id="entry3" class="column hover-group hidden-text center">
+                <h1>A suicide note was recovered, addressed to his family.</h1>
+                <h1 class="vanishing insane trigger" target="entry4">
+                    Bullshit
+                </h1>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () =>{
+        const triggers = document.querySelectorAll('.trigger');
+
+        triggers.forEach(trigger => {
+            trigger.addEventListener('click', () => {
+                const targetID = trigger.getAttribute('target');
+                const target = document.getElementById(targetID);
+                if(target){
+                    target.classList.add('visible');
+                }
+            });
+        });
+    });
+</script>
+{%endblock%}

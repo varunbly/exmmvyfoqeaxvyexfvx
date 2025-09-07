@@ -6,16 +6,20 @@ app = Flask(__name__)
 def home():
     return render_template('index.html')
 
+@app.route("/Lies/<int:number>")
+def level_0(number):
+    return render_template(f"level_0_{number}.html")
+
 @app.route('/<int:number>')
 def level_1(number):
-    target = 69
+    target = 1509
     if(number < target):
         return render_template("level_1_l.html", number = number)
     elif(number > target):
         return render_template("level_1_h.html", number = number)
     else:
         return render_template("level_1_t.html", number = number)
-
+    
 
 @app.route("/greet", methods=["POST"])
 def greet():

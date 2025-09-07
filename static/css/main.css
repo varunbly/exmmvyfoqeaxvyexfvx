@@ -1,5 +1,54 @@
+@font-face {
+     font-family: 'InsaneRush-DOqMm';
+     src: url(../fonts/InsaneRush-DOqMm.otf) format('opentype');
+     font-weight: normal;
+     font-style: normal;
+}
+
+.vanishing{
+     opacity: 0;                  
+     transition: opacity 0.4s ease
+}
+
+.vanishing:hover{
+     opacity: 1;
+}
+
+.hover-group:hover .vanishing {
+  opacity: 1;           
+}
+
+.insane{
+     font-family: 'InsaneRush-DOqMm';
+     font-size: clamp(3rem, 8vw, 5rem);            /* BIG text */
+     font-weight: bold;           /* thicker font */
+     color: crimson;              /* eye-catching color */
+     text-transform: uppercase;   /* optional: make it all caps */
+     text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.5); /* dramatic effect */
+}
+
 body {
      background-color: black;
      color: white;
      /* font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; */
+}
+
+a{
+     color: lime;
+     text-decoration: none;
+     /* display: block; */
+}
+
+.center-container {
+  display: flex;
+  justify-content: center;  /* Center horizontally */
+  align-items: center;      /* Center vertically */
+  height: 100vh;            /* Full viewport height */
+}
+
+.stack-vert {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
 }

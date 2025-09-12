@@ -1,0 +1,70 @@
+.hide-overflow{
+    overflow: hidden;
+}
+    /* Container to hold the falling effect */
+.fall-container {
+  display: inline-block;
+  position: relative;
+  /* overflow: hidden; Prevent falling elements from overflowing */
+}
+
+/* Apply the falling effect to all children */
+.fall-down * {
+  position: relative;
+  animation: fall 3s ease forwards;
+}
+
+/* Stagger each child slightly for a cascading effect */
+.fall-down *:nth-child(1) { animation-delay: 0s; }
+.fall-down *:nth-child(2) { animation-delay: 0.1s; }
+.fall-down *:nth-child(3) { animation-delay: 0.2s; }
+.fall-down *:nth-child(4) { animation-delay: 0.3s; }
+
+/* Keyframes for the falling animation */
+@keyframes fall {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(110vh); /* How far down it falls */
+    } 
+}
+
+#falling-words-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* Doesn't block clicks */
+  overflow: hidden;
+}
+
+/* Falling word style */
+.falling-word {
+    font-family: inherit;
+    color: inherit;
+  position: absolute;
+  top: -50px; /* Start slightly above the screen */
+  font-size: 1.7rem;
+  opacity: 1;
+  animation: fallWord linear forwards;
+  white-space: nowrap;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+}
+
+@keyframes fallWord {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(50vh);
+  }
+  100% {
+    transform: translateY(110vh);
+    opacity: 0.5;
+  }
+}

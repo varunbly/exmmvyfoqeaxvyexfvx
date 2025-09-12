@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<script src = "{{ url_for('static', filename='js/typewriter.js')}}" defer></script>
+<script src = "{{ url_for('static', filename='js/falling.js')}}" defer></script>
+<link rel="stylesheet" href ="{{ url_for('static', filename='css/falling.css') }}">
+<style>
+    html{
+        font-size: 2vh;
+    }
+
+    body{
+        overflow: hidden; 
+        width: 1vw;
+    }
+
+    .text-area{
+        width: 70vw;
+    }
+
+    dl{
+        margin:10px 0;
+        text-indent: 0%;
+    }
+
+    dt{color:var(--muted);font-size:1rem}
+
+    dd{margin:4px 0 12px;font-size:1rem}
+    .padding{
+        padding: 1em;
+        padding-left: 2em;
+    }
+    .color-line {
+        border: none;
+        height: 1px;
+        background-color: #00FF55;
+        width: 100%;
+        opacity: 0.34;
+    }
+
+    p{
+        margin-top: 0.1em;
+        margin-bottom: 0em;
+    }
+
+    .indent{
+          text-indent: 1.2em;
+    }
+    ul{
+        margin: 0;
+        padding-left: 1em;
+        text-indent: 0em;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div>
+  <div id="dialogue-1" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-2">damned bastards </div>
+  <div id="dialogue-2" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-3">They tricked me !</div>
+  <div id="dialogue-3" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-4">Now i will kill </div>
+  <div id="dialogue-4" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-5">I will kill them all !!! </div>
+  <div class="hover-group">
+  <div id="dialogue-5" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-5"> Kill kill kill kill kill kill kill kill kill kill kill kill kill kill kill kill kill kil </div>
+  <div id="response" class="vanishing hidden-text player fixed" style="top: 60vh; left: 50vw; transform: translate(-50%, -50%);cursor: pointer;" target ="dialogue-6">Calm Down</div>
+  <div id="dialogue-6" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-7">Calm Down...</div>
+  <div id="dialogue-7" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-8">Calm Down</div>
+  <div id="dialogue-8" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-9">Calm Down?!</div>
+  <div id="dialogue-9" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-10">After everything they did!</div>
+  <div id="dialogue-10" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-11">I should just calm down ?!</div>
+  <div id="dialogue-11" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-12">You coward!</div>
+  <div id="dialogue-12" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-13">This is the time to rage!!</div>
+  <div id="dialogue-13" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-14">If you want to be a coward</div>
+  <div id="dialogue-14" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-15">Go, talk to that coward!</div>
+  <div id="dialogue-15" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-16">Get the hell out of here!</div>
+  </div>
+<div id="falling-words-container" class= "padding typewriter fall-container">
+<div class="padding column" style="width: 70%;">
+    <dl>
+          <dt>Subject ID : A-074</dt>
+          <dt>Name : [REDACTED]</dt>
+          <dt>Age : 20</dt>
+          <dt>Status : Deceased (official record)</dt>
+          <dt>Background: Second-year computer science student, selected for high cognitive adaptability and prior experience with distributed systems. </dt>
+    </dl>
+    <hr class="color-line">
+    <p>
+        Phase II – Isolation Environment Boot <br>
+        The subject’s consciousness was transferred to a segmented virtual server cluster to test stability in a contained environment.
+    </p>
+    <p class="indent">
+        This cluster was designed to mimic basic cognitive functions and emotional processing nodes.<br>
+        Outcome:
+    </p>
+    <dl>
+        <dt>Shortly after transfer, anomalous behavior was detected:</dt>
+        <dd>
+            <ul>
+                <li> Emotional activity spiked far beyond expected thresholds.</li>
+                <li>System logs recorded three distinct, self-sustaining processes, each representing a dominant emotional state:
+                    <ol type="a">
+                        <li>ANGER – Highly aggressive, destructive, interfered with core processes.</li>
+                        <li>FEAR – Passive, evasive, attempted to hide within unused system memory.</li>
+                        <li>HOPE – Stable but inaccessible, retreated to deep backend layers.</li>
+                    </ol>
+                </li>
+            </ul>
+            These processes appeared to compete for control of the system environment.
+        </dd>
+    </dl>
+</div>
+</div>
+</div>
+<button onclick="triggerFall()">Make It Fall</button>
+<script>
+
+clickResponse = false;
+response = document.getElementById('response');
+
+function triggerFall() {
+  document.querySelector('.fall-container').classList.add('fall-down');
+
+  startRain()
+  dialogue = document.getElementById("dialogue-1");
+  setTimeout(()=>{
+    dialogue.classList.add("visible")
+  }, 800)
+}
+document.addEventListener('DOMContentLoaded', () =>{
+  const responseDialogue = document.getElementById("dialogue-5");
+  const triggers = document.querySelectorAll('.trigger');
+  triggers.forEach(trigger => {
+    trigger.addEventListener('click', () => {
+      trigger.classList.remove('visible');
+      const targetID = trigger.getAttribute('target');
+      const target = document.getElementById(targetID);
+      if(target){
+        setTimeout(()=>{
+          target.classList.add('visible');
+        }, 800)
+      }
+    });
+  
+  document.getElementById("dialogue-10").addEventListener('click', ()=>{
+    setTimeout(()=>{
+      startRain(['COWARD'])
+    }, 1500)
+  })  
+
+  });
+
+  responseDialogue.addEventListener('click', ()=> {
+    if(clickResponse){return}
+    clickResponse = true
+    setTimeout(()=>{
+      response.classList.add('visible');
+    }, 5000)
+  })
+
+  response.addEventListener('click', ()=>{
+    response.classList.remove('visible')
+    responseDialogue.classList.remove('visible')
+    stopRain();
+    setTimeout(()=>{
+      document.getElementById('dialogue-6').classList.add('visible')
+    }, 2000)
+  })
+
+
+
+});
+</script>
+
+{%endblock%}

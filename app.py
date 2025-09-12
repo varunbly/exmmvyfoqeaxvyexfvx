@@ -27,5 +27,9 @@ def greet():
     name = data.get("name", "Guest")
     return jsonify({"message": f"Hello, {name}!"})
 
+@app.route("/test/<int:number>")
+def test(number):
+    return render_template(f"test{number}.html")
+
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Showdown — Fear vs Anger</title>
+<style>
+  :root{
+    --bg:#060407; --paper:#0f0f12; --ink:#e6eef6; --muted:#9aa6b2;
+    --anger:#c93b2f; --fear:#7bd2d8; --safe:#7aa57a;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Arial;background:radial-gradient(circle at 20% 20%, #0b0c10 0%, #040406 40%, #030204 100%);color:var(--ink)}
+  .stage{max-width:1000px;margin:28px auto;padding:28px;background:linear-gradient(180deg,#071018,#0b0d12);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.7);min-height:72vh;position:relative;overflow:hidden}
+  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+  h1{font-size:1.1rem;margin:0;color:var(--muted)}
+  .hud{font-family:monospace;color:#cfe7ff}
+  /* Anger background & text */
+  .anger-overlay{position:absolute;inset:0;background:linear-gradient(135deg, rgba(201,59,47,0.06), rgba(0,0,0,0.2));pointer-events:none;z-index:1}
+  .anger-voice{position:absolute;top:8%;left:50%;transform:translateX(-50%);z-index:30;font-weight:800;font-size:2rem;color:var(--anger);text-shadow:0 6px 18px rgba(201,59,47,0.12);opacity:0;transition:opacity 200ms}
+  .fear-voice{position:absolute;bottom:8%;left:6%;z-index:30;font-style:italic;color:var(--fear);opacity:0;transition:opacity 200ms}
+  /* playfield */
+  .arena{position:relative;z-index:5;border-radius:8px;padding:20px;background:linear-gradient(180deg,#071018,#061018);min-height:420px;overflow:hidden;border:1px solid rgba(255,255,255,0.02)}
+  .anchors{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start}
+  .anchor{
+    background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.04);
+    padding:10px 14px;border-radius:8px;cursor:pointer;user-select:none;font-weight:700;
+    transition:transform 120ms,opacity 180ms;
+  }
+  .anchor:hover{transform:translateY(-4px)}
+  .anchor.stabilized{background:var(--safe);color:#041204;border:1px solid rgba(0,0,0,0.06)}
+  /* Anger's projectiles (destructive blocks) */
+  .projectile{
+    position:absolute;background:linear-gradient(180deg,rgba(201,59,47,0.95),rgba(120,20,18,0.9));
+    color:#fff;padding:10px;border-radius:6px;z-index:20;box-shadow:0 10px 40px rgba(201,59,47,0.12);
+    transform:rotate(-3deg);animation:shake 600ms infinite;
+  }
+  @keyframes shake{0%{transform:translate3d(0,0,0) rotate(-2deg)}50%{transform:translate3d(3px,-2px,0) rotate(2deg)}100%{transform:translate3d(0,0,0) rotate(-2deg)}}
+  .safe-zone{position:absolute;right:6%;top:12%;width:28%;height:36%;border-radius:10px;background:rgba(122,165,122,0.06);backdrop-filter:blur(2px);z-index:8;border:1px solid rgba(122,165,122,0.06);display:flex;align-items:center;justify-content:center;color:var(--safe);font-weight:700;opacity:0;transition:opacity 300ms}
+  .dialog{margin-top:12px;color:var(--muted);font-size:0.95rem}
+  .controls{position:relative;z-index:40;margin-top:16px;display:flex;gap:8px;align-items:center}
+  .btn{background:transparent;color:var(--ink);border:1px solid rgba(255,255,255,0.04);padding:8px 12px;border-radius:8px;cursor:pointer}
+  .clue{display:block;margin-top:18px;padding:12px;border-radius:8px;background:linear-gradient(180deg,#031018,#071118);border:1px solid rgba(255,255,255,0.03);font-family:monospace;color:#bfe8ff;opacity:0;transition:opacity 300ms}
+  .clue.visible{opacity:1}
+  /* destruct animation for anchors */
+  .anchor.dying{opacity:0.18;transform:scale(0.9);pointer-events:none}
+  /* small responsive tweaks */
+  @media (max-width:720px){.fear-voice{left:8%;font-size:0.95rem}.anger-voice{font-size:1.6rem}}
+</style>
+</head>
+<body>
+  <main class="stage" role="main" aria-labelledby="title">
+    <header>
+      <h1 id="title">SHOWDOWN — FEAR vs ANGER</h1>
+      <div class="hud">Round: <span id="round">1</span> — Anchors left: <span id="left">3</span></div>
+    </header>
+
+    <div class="anger-overlay" aria-hidden="true"></div>
+    <div class="anger-voice" id="angerText">YOU DARE BRING HIM HERE?</div>
+    <div class="fear-voice" id="fearText">i... i'm here. stay close.</div>
+
+    <section class="arena" id="arena" aria-live="polite">
+      <div class="safe-zone" id="safeZone">SAFE ZONE</div>
+
+      <div class="dialog" id="stageDialog">
+        The environment destabilizes as Anger asserts control. Fear is fragile — protect him while he anchors stability points.
+      </div>
+
+      <div class="anchors" id="anchors"></div>
+
+      <div class="controls">
+        <button class="btn" id="startBtn">Start Round</button>
+        <button class="btn" id="showHint">Quick Hint</button>
+      </div>
+
+      <div class="clue" id="finalClue">/backend</div>
+    </section>
+  </main>
+
+<script>
+/*
+  Showdown skeleton:
+  - 3 rounds
+  - Each round spawns projectiles (anger blocks) that cover anchors
+  - Player clicks anchors before they are destroyed
+  - Fear provides safe zone after a threshold is stabilized
+  - On success across 3 rounds, reveal final clue (/backend)
+*/
+
+const arena = document.getElementById('arena');
+const anchorsEl = document.getElementById('anchors');
+const startBtn = document.getElementById('startBtn');
+const showHint = document.getElementById('showHint');
+const roundLabel = document.getElementById('round');
+const leftLabel = document.getElementById('left');
+const angerText = document.getElementById('angerText');
+const fearText = document.getElementById('fearText');
+const safeZone = document.getElementById('safeZone');
+const finalClue = document.getElementById('finalClue');
+const stageDialog = document.getElementById('stageDialog');
+
+let round = 1;
+let anchorsLeft = 3;          // anchors per round
+let stabilizedThisRound = 0;
+let projectiles = [];
+let anchorCount = 3;
+let roundActive = false;
+
+function createAnchors(n){
+  anchorsEl.innerHTML = '';
+  for(let i=0;i<n;i++){
+    const a = document.createElement('div');
+    a.className = 'anchor';
+    a.textContent = ['HOPE','CALM','ROOT'][i % 3]; // thematic words
+    a.dataset.stabilized = 'false';
+    anchorsEl.appendChild(a);
+
+    // click behavior
+    a.addEventListener('click', () => {
+      if(a.dataset.stabilized === 'true' || !roundActive) return;
+      stabilizeAnchor(a);
+    });
+  }
+  leftLabel.textContent = n;
+}
+
+function stabilizeAnchor(el){
+  el.classList.add('stabilized');
+  el.dataset.stabilized = 'true';
+  stabilizedThisRound++;
+  anchorsLeft--;
+  leftLabel.textContent = Math.max(0, anchorCount - stabilizedThisRound);
+  // small visual reward
+  el.animate([{transform:'scale(1)'},{transform:'scale(1.06)'},{transform:'scale(1)'}],{duration:250});
+  // if enough stabilized, reveal safe zone and Fear's text
+  if(stabilizedThisRound === 1){
+    showFear();
+  }
+  if(stabilizedThisRound >= anchorCount){
+    endRoundSuccess();
+  }
+}
+
+function spawnProjectile(){
+  // make a destructive block that moves across the arena and tries to "hit" anchors
+  const p = document.createElement('div');
+  p.className = 'projectile';
+  p.textContent = ['RIP','BREAK','TEAR'][Math.floor(Math.random()*3)];
+  const w = 120 + Math.random()*80;
+  p.style.width = (w|0) + 'px';
+  // random start position at top/left
+  const top = 40 + Math.random()*60;
+  const left = 10 + Math.random()*80;
+  p.style.top = top + '%';
+  p.style.left = left + '%';
+  arena.appendChild(p);
+  projectiles.push(p);
+
+  // after a short time, try to cover a random anchor
+  setTimeout(()=> {
+    if(!document.body.contains(p)) return;
+    // pick a random anchor that is not stabilized
+    const available = Array.from(document.querySelectorAll('.anchor')).filter(a=>a.dataset.stabilized==='false' && !a.classList.contains('dying'));
+    if(available.length){
+      const target = available[Math.floor(Math.random()*available.length)];
+      // position p over target
+      const rect = target.getBoundingClientRect();
+      const ar = arena.getBoundingClientRect();
+      p.style.transition = 'all 420ms ease';
+      p.style.left = (rect.left - ar.left + 2) + 'px';
+      p.style.top = (rect.top - ar.top + 2) + 'px';
+      // after landing, either destroy or fade
+      setTimeout(()=> {
+        // 40% chance it destroys the anchor
+        if(Math.random() < 0.4){
+          target.classList.add('dying');
+          target.textContent = '...';
+        }
+        // remove projectile after action
+        p.remove();
+      }, 500);
+    } else {
+      // wander away then remove
+      p.style.opacity = '0.08';
+      setTimeout(()=> p.remove(), 700);
+    }
+  }, 600 + Math.random()*800);
+}
+
+function startRound(){
+  if(round > 3) return;
+  roundActive = true;
+  roundLabel.textContent = round;
+  stageDialog.textContent = `Round ${round} — Anger intensifies. Stabilize ${anchorCount} anchors.`;
+  anchorsLeft = anchorCount;
+  stabilizedThisRound = 0;
+  createAnchors(anchorCount);
+
+  // spawn a burst of projectiles depending on round (escalation)
+  const bursts = 6 + round*3;
+  let spawned = 0;
+  const spawnInterval = setInterval(()=> {
+    spawnProjectile();
+    spawned++;
+    if(spawned >= bursts){
+      clearInterval(spawnInterval);
+    }
+  }, 420);
+
+  // periodic Anger shouts
+  angerText.style.opacity = '1';
+  angerText.textContent = ['YOU DARE BRING HIM HERE?','HE WILL STAY!','I WILL TEAR THIS PLACE!'][Math.min(round-1,2)];
+  setTimeout(()=> angerText.style.opacity = '0', 2200 + round*200);
+
+  // after round time limit, check failure
+  const roundTimeout = 12000 - (round*1500); // shorter with each round
+  setTimeout(()=>{
+    if(stabilizedThisRound < anchorCount){
+      roundFail();
+    }
+  }, roundTimeout + 600);
+
+  // gradually spawn smaller projectiles while round is active
+  const aux = setInterval(()=> {
+    if(!roundActive) { clearInterval(aux); return; }
+    if(Math.random() < 0.6) spawnProjectile();
+  }, 900 - round*100);
+}
+
+function endRoundSuccess(){
+  roundActive = false;
+  // Fear anchors more confidently
+  safeZone.style.opacity = '1';
+  fearText.style.opacity = '1';
+  fearText.textContent = ["i... i'm here. stay close.","we did it... hold on","we can face him now"][Math.min(round-1,2)];
+  stageDialog.textContent = 'Fear holds the ground; Anger falters.';
+  // small pause then progress
+  setTimeout(()=>{
+    round++;
+    if(round <= 3){
+      stageDialog.textContent = 'Prepare for the next surge. Click Start Round.';
+      roundLabel.textContent = round;
+    } else {
+      // show Anger's last word and reveal clue
+      angerText.style.opacity = '1';
+      angerText.textContent = "find... her...";
+      setTimeout(()=> angerText.style.opacity = '0', 2400);
+      revealFinalClue();
+    }
+  }, 900);
+}
+
+function roundFail(){
+  roundActive = false;
+  stageDialog.textContent = 'System destabilized — fear recoils. Try again.';
+  angerText.style.opacity = '1';
+  angerText.textContent = "YOU FAILED!";
+  setTimeout(()=> angerText.style.opacity = '0', 1800);
+  // cleanup anchors & reset
+  const as = document.querySelectorAll('.anchor');
+  as.forEach(a=>a.classList.remove('stabilized','dying'), a=>a.dataset.stabilized='false');
+  // small penalty: reduce anchorCount to increase tension (but never below 2)
+  anchorCount = Math.max(2, anchorCount - 0);
+  setTimeout(()=> stageDialog.textContent = 'Click Start Round to try again.', 900);
+}
+
+function revealFinalClue(){
+  finalClue.classList.add('visible');
+  finalClue.setAttribute('aria-hidden','false');
+  stageDialog.textContent = 'Anger yields a fractured hint... the backend hides the last piece.';
+  // show safe zone calm and allow continue button
+  safeZone.style.opacity = '1';
+  // attach a little continue after success
+  const cont = document.createElement('button');
+  cont.className = 'btn';
+  cont.textContent = 'Proceed to Backend';
+  cont.style.marginLeft = '8px';
+  cont.addEventListener('click', ()=> {
+    // go to backend route or open console hint
+    alert('Hint: open DevTools or navigate to /backend (demo).');
+  });
+  document.querySelector('.controls').appendChild(cont);
+}
+
+// quick hint button shows Fear's hint or small nudge
+showHint.addEventListener('click', ()=>{
+  if(!roundActive){
+    stageDialog.textContent = 'Hint: protect Fear by clicking anchors quickly. Some anchors hide behind Anger\'s words (hover to reveal).';
+  } else {
+    stageDialog.textContent = 'During chaos look for faint outlines behind Anger — hover near his text to uncover anchors.';
+  }
+});
+
+// small hover trick: hovering near anger sometimes reveals a nearby anchor outline
+arena.addEventListener('mousemove', e=>{
+  const angerRect = document.querySelector('.anger-voice').getBoundingClientRect();
+  const dist = Math.abs(e.clientX - (angerRect.left + angerRect.width/2));
+  if(dist < 180 && Math.random() < 0.02){
+    // reveal a random anchor faintly
+    const avail = Array.from(document.querySelectorAll('.anchor')).filter(a=>a.dataset.stabilized==='false' && !a.classList.contains('dying'));
+    if(avail.length){
+      const t = avail[Math.floor(Math.random()*avail.length)];
+      t.animate([{opacity:0.3},{opacity:1},{opacity:0.6}],{duration:700});
+    }
+  }
+});
+
+// start button wiring
+startBtn.addEventListener('click', () => {
+  if(round > 3){
+    stageDialog.textContent = 'All rounds complete.';
+    return;
+  }
+  if(roundActive){ stageDialog.textContent = 'Round already in progress.'; return; }
+  createAnchors(anchorCount);
+  startRound();
+});
+
+// initialize visuals
+createAnchors(anchorCount);
+stageDialog.textContent = 'You stand with Fear at the threshold. Anger waits above. Click Start Round to begin.';
+leftLabel.textContent = anchorCount;
+finalClue.setAttribute('aria-hidden','true');
+
+</script>
+</body>
+</html>

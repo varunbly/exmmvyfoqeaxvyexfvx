@@ -61,6 +61,10 @@ def convince():
 def you_lost():
     return render_template('lost_screen.html')
 
+@app.route("/report")
+def report():
+    return render_template('test1.html')
+
 @app.route("/youFinallyWin")
 def random():
     return render_template("you_win.html")

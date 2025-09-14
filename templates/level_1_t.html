@@ -38,7 +38,7 @@
 {% block body %}
 <div>
     <div class="dialogues full-screen">
-        <div id="dialogue-1" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-16">Why are you here?</div>
+        <div id="dialogue-1" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-2">Why are you here?</div>
         <div id="dialogue-2" class="hidden-text fixed fearful trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-3">I-I brought him here..</div>
         <div id="dialogue-3" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-4">Wow, So all the cowards are here</div>
         <div id="dialogue-4" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-5">just that pretentious hope is missing</div>
@@ -438,7 +438,7 @@
 
     moveElementWithDecision('anger', window.innerWidth*0.5, window.innerHeight*0.1, 1000);
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 10000));
 
     changeTextSmoothly(anger, "just call the correct function in the console");
 

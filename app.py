@@ -63,7 +63,7 @@ def you_lost():
 
 @app.route("/report")
 def report():
-    return render_template('test1.html')
+    return render_template('test2.html')
 
 @app.route("/youFinallyWin")
 def random():

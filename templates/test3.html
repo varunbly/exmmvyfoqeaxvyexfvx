@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CSAD — Experiment Report (CSAD/EX-1094-A)</title>
+  <style>
+    :root{--bg:#0b0b0f;--paper:#0f1220;--ink:#dfe7ef;--muted:#9aa6b2;--accent:#c86b5a}
+    *{box-sizing:border-box}
+    body{background:linear-gradient(180deg,#041021 0%, #071624 100%);color:var(--ink);font-family:Inter,Segoe UI,Roboto,system-ui, -apple-system, 'Helvetica Neue', Arial;margin:0;padding:32px}
+    .container{max-width:860px;margin:24px auto;padding:28px;background:linear-gradient(180deg,var(--paper),#0b0e16);border-radius:10px;box-shadow:0 10px 40px rgba(3,6,15,0.6);border:1px solid rgba(255,255,255,0.02)}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .org{font-weight:700;font-size:1.05rem;letter-spacing:0.4px}
+    .meta{font-family:Menlo,Monaco,monospace;color:var(--muted);font-size:0.9rem}
+    h1{margin:6px 0 0;font-size:1.25rem}
+    h2{color:var(--muted);font-size:0.95rem;margin-top:18px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    dl{margin:10px 0}
+    dt{color:var(--muted);font-size:0.9rem}
+    dd{margin:4px 0 12px;font-size:1rem}
+    section p{line-height:1.6;color:var(--ink);margin:8px 0}
+    pre.log{background:#07121a;border-left:4px solid rgba(200,200,255,0.04);padding:12px;border-radius:6px;color:#b9e0ff;overflow:auto}
+    .warning{background:#1a0f0f;color:#ffd6d6;padding:10px;border-radius:6px;margin:12px 0;font-weight:600}
+    footer{margin-top:22px;color:var(--muted);font-size:0.9rem}
+    .redacted{background:linear-gradient(90deg,#0b0e16 0,#0b0e16 100%);color:transparent;text-shadow:0 0 0 #0b0e16;border-radius:2px;padding:0 6px}
+    .hint{color:var(--accent);font-weight:600}
+    .download{display:inline-block;margin-top:14px;padding:8px 12px;border-radius:6px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--ink);text-decoration:none;font-family:monospace}
+    @media (max-width:640px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="container" role="main">
+    <header>
+      <div>
+        <div class="org">Cognitive Systems Advancement Division (CSAD)</div>
+        <div class="meta">Document ID: <strong>CSAD/EX-1094-A</strong> &nbsp;•&nbsp; Clearance: Internal Use Only</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:0.95rem;color:var(--muted)">Project Codename</div>
+        <div style="font-weight:700">ECHOFRAME</div>
+      </div>
+    </header>
+
+    <h1>Experiment Report — Summary of Incident</h1>
+    <div class="grid" style="margin-top:12px">
+      <div>
+        <dl>
+          <dt>Subject ID</dt>
+          <dd><span class="redacted">A-074</span></dd>
+
+          <dt>Name</dt>
+          <dd><span class="redacted">[REDACTED]</span></dd>
+
+          <dt>Age</dt>
+          <dd>22</dd>
+        </dl>
+      </div>
+      <div>
+        <dl>
+          <dt>Status</dt>
+          <dd><strong>Deceased</strong> <span style="color:var(--muted)"> (official)</span></dd>
+
+          <dt>Background</dt>
+          <dd class="muted">Final-year CS student; selected for high cognitive adaptability.</dd>
+        </dl>
+      </div>
+    </div>
+
+    <section>
+      <h2>1. Experiment Objective</h2>
+      <p>
+        The <em>ECHOFRAME Initiative</em> aims to digitally preserve and stabilise a living consciousness within a controlled virtual environment. Primary objectives: enable mind–machine interfaces, extend human cognition, and evaluate resilience of consciousness under fragmentation scenarios. A-074 was the first live human subject for a full-scale integration trial.
+      </p>
+    </section>
+
+    <section>
+      <h2>2. Procedure Summary</h2>
+
+      <h3 style="color:var(--muted);margin-top:6px">Phase I — Neural Capture</h3>
+      <p>
+        Neural activity was captured and mapped using the <strong>NeuroBridge v2.1</strong> system. Initial transfer registered as stable replication with expected signal fidelity.
+      </p>
+
+      <h3 style="color:var(--muted);margin-top:6px">Phase II — Isolation Environment Boot</h3>
+      <p>
+        Consciousness was transferred to a segmented virtual cluster designed to emulate cognitive and emotional processing nodes. Shortly after transfer, anomalous behaviour was recorded: three distinct, self-sustaining processes emerged, each dominated by a primary affective state.
+      </p>
+
+      <ul>
+        <li><strong>ANGER</strong> — aggressive, interfering with core processes.</li>
+        <li><strong>FEAR</strong> — evasive, retreated into unused memory regions.</li>
+        <li><strong>HOPE</strong> — stable but inaccessible in deep backend layers.</li>
+      </ul>
+
+      <h3 style="color:var(--muted);margin-top:6px">Phase III — Reintegration Attempt</h3>
+      <p>
+        Automated reconciliation scripts attempted to merge fragments. Anger generated hostile counter-scripts; Fear became isolated; Hope was unresponsive to direct commands. After ~12 hours the environment reached critical instability and manual shutdown was initiated.
+      </p>
+    </section>
+
+    <section>
+      <h2>3. Incident Summary</h2>
+      <p>
+        Sequence recorded during shutdown procedures:
+      </p>
+      <ol>
+        <li>Anger rewrote portions of the control interface to block termination commands.</li>
+        <li>Fear concealed processes within lower-level comments and meta-tags, reducing detectability.</li>
+        <li>Hope transmitted an outgoing debug signal via backend ports.</li>
+      </ol>
+
+      <pre class="log">[23:59:42] [HOPE]: "not gone. still here. find me."</pre>
+
+      <p style="margin-top:8px">At 00:01 the subject's physiological functions ceased. <strong>Official cause of death:</strong> Cardiac arrest due to neural overload. Traces of consciousness persist within the cluster despite shutdown procedures.</p>
+    </section>
+
+    <section>
+      <h2>4. Current Status</h2>
+      <p>
+        The subject's consciousness remains fragmented and contained within a secure subdomain. Anger retains limited control over interface elements and can project outputs to the user layer. Fear remains passive and elusive via near-invisible channels. Hope is likely accessible only through backend interactions (API/console).
+      </p>
+
+      <div class="warning">Unauthorized interaction with the subdomain may result in system compromise or psychological risk to operators.</div>
+    </section>
+
+    <section>
+      <h2>5. Recommended Actions</h2>
+      <ol>
+        <li>Sever external network access to the cluster (pending).</li>
+        <li>Deploy containment patches to limit Anger's UI projection capabilities (in progress).</li>
+        <li>Develop secure backend communication tools to engage Hope directly (research stage).</li>
+        <li>Prepare an incident brief for stakeholders framing the event as equipment failure.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>6. Closing Statement</h2>
+      <p>
+        While the death of A-074 is regrettable, data from this trial provides critical insight into consciousness modelling. Future iterations will prioritise emotional fragmentation handling, backend communication integrity, and safe extraction protocols. Access to the affected subdomain is restricted pending full containment verification.
+      </p>
+
+      <p style="font-weight:700;margin-top:8px">Report Compiled By: <br> Dr. Elara Venn, Lead Researcher — CSAD</p>
+
+      <footer>
+        <div>Timestamp: <span class="meta">[REDACTED]</span></div>
+      </footer>
+    </section>
+
+    <a class="download" href="#" onclick="alert('This is a static demo. Save page as HTML to extract.');return false">Save / Export</a>
+
+  </div>
+
+  <!-- Optional hidden clue for players: he isn't gone. listen carefully. -->
+  <!-- he isn't gone. listen carefully. -->
+
+</body>
+</html>

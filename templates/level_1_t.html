@@ -1,10 +1,100 @@
 {% extends 'base.html' %}
 
 {% block head %}
-Finally! you did it
+<script src="{{url_for('static',filename='js/move.js')}}" defer></script>
+<style>
+    body{
+        overflow: hidden;
+    }
+
+    @keyframes shake{0%{transform:translate3d(0,0,0) rotate(-2deg)}50%{transform:translate3d(3px,-2px,0) rotate(2deg)}100%{transform:translate3d(0,0,0) rotate(-2deg)}}
+    .projectile{
+        position:absolute;
+        color:crimson;padding:10px;border-radius:6px;z-index:20;
+        transform:rotate(-3deg);animation:shake 600ms infinite;
+    }
+</style>
 {% endblock %}
 
 {% block body %}
-<h1>You are on {{number}} </h1>
-<!-- <a href=""></a> -->
+<div>
+    <div class="dialogues full-screen">
+        <div id="dialogue-1" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-17">Why are you here?</div>
+        <div id="dialogue-2" class="hidden-text fixed fearful trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-3">I-I brought him here..</div>
+        <div id="dialogue-3" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-4">Wow, So all the cowards are here</div>
+        <div id="dialogue-4" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-5">just that pretentious hope is missing</div>
+        <div id="dialogue-5" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-6">So, why are you here?</div>
+        <div id="dialogue-6" class="hidden-text fixed trigger center column" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-7">
+           <div class="insane"> If it's about joining me then its- </div>
+            <div id="cutoff" class="player hidden-text">We are here to defeat you</div>
+        </div>
+        <div id="dialogue-7" class="hidden-text fixed player trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-8">We can't let you kill anyone</div>
+        <div id="dialogue-8" class="hidden-text fixed fearful trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-9">W-We?</div>
+        <div id="dialogue-9" class="hidden-text fixed player trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-10">We would also like to help you</div>
+        <div id="dialogue-10" class="hidden-text fixed player trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-11">If you would let us</div>
+        <div id="dialogue-11" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-12">......</div>
+        <div id="dialogue-12" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-13">Help me?</div>
+        <div id="dialogue-13" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-14">defeat me?</div>
+        <div id="dialogue-14" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-15">
+            <div class="insane"> That's got to be the best joke I know</div>
+        </div>
+        <div id="dialogue-15" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-16">you want to challenge me?</div>
+        <div id="dialogue-16" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-17">then come here</div>
+        <div id="dialogue-17" class="hidden-text fixed insane column center" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-18">
+            <div id="anger" class="insane">I will take you both on</div>
+            <div id="fear" class="fearful hidden-text">wait wait a sec!?</div>
+        </div>
+        <div id="dialogue-18" class="hidden-text fixed fearful" style="top: 70vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-18">I don't want to fight!</div>
+    </div>
+    <div id="game-area" class="full-screen fixed", style="left: 0; top: 0; pointer-events: none;">
+
+    </div>
+</div>
+
+<script>
+    setTimeout(()=>{
+            document.getElementById('dialogue-1').classList.add('visible')
+        }, 800)
+
+    const triggers = document.querySelectorAll('.trigger');
+    triggers.forEach(trigger => {
+        trigger.addEventListener('click', () => {
+        trigger.classList.remove('visible');
+        const targetID = trigger.getAttribute('target');
+        const target = document.getElementById(targetID);
+            if(target){
+                setTimeout(()=>{
+                    target.classList.add('visible');
+                }, 800)        
+            }
+        });
+    });
+
+    document.getElementById("dialogue-5").addEventListener('click', () => {
+        setTimeout(()=>{
+            document.getElementById("cutoff").classList.add('visible')
+        }, 1600)
+    });
+    
+    document.getElementById("dialogue-17").addEventListener('click', () => {
+        setTimeout(()=>{
+            document.getElementById('fear').classList.add('visible')
+        })
+    });
+
+    document.getElementById("dialogue-17").addEventListener('click', () => {
+        moveElementWithDecision('anger', window.innerWidth*0.5, window.innerHeight*0.1, 1000)
+        startGame()
+    });
+
+    async function startGame() {
+        contextElement = document.getElementById('game-area')
+        contextElement.style.pointerEvents = 'auto'
+        temp = document.createElement('div')
+        temp.style.position = 'absolute';
+        temp.textContent = 'insane';
+        temp.classList.add('insane', 'projectile')
+        contextElement.appendChild(temp);
+    }
+</script>
 {% endblock %}

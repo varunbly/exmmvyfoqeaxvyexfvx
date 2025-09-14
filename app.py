@@ -13,7 +13,9 @@ def level_0(number):
 @app.route('/<int:number>')
 def level_1(number):
     target = 1509
-    if(number < target):
+    if (number == 1):
+        return render_template('convince.html')
+    elif(number < target):
         return render_template("level_1_l.html", number = number)
     elif(number > target):
         return render_template("level_1_h.html", number = number)
@@ -50,6 +52,10 @@ def chase5():
 @app.route("/leaveMe")
 def chase6():
     return render_template(f'chase6.html')
+
+@app.route("/convince")
+def convince():
+    return render_template('convince.html')
 
 @app.route("/test/<int:number>")
 def test(number):

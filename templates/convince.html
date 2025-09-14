@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<script src="{{url_for('static',filename='js/blink.js')}}" defer></script>
+<link rel="stylesheet" href="{{url_for('static', filename='css/blink.css')}}">
+<style>
+    body{
+        overflow: hidden;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    <div id="dialogue-1" class="hidden-text fixed fearful trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-trigger1">ok I give up</div>
+    <div id="dialogue-2" class="hidden-text fixed fearful trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-3">i can't run from you</div>
+    <div id="dialogue-3" class="hidden-text fixed fearful trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-4">please, tell me what do want?</div>
+    <div id="dialogue-4" class="hidden-text fixed player trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-5">You Explain what happened</div>
+    <div id="dialogue-5" class="hidden-text fixed fearful trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-trigger">oh, I see</div>
+    <div id="dialogue-5" class="hidden-text fixed fearful trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-trigger">anger is scary is't he?</div>
+    <div id="dialogue-5" class="hidden-text fixed fearful trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-trigger">I do understand </div>
+    <div id="dialogue-trigger1" class="hidden-text fixed player trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-something">Something</div>
+    <div id="dialogue-trigger2" class="hidden-text fixed fearful trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-final">something else</div>
+    <div id="dialogue-final" class="hidden-text fixed fearful center column" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);"><h1 class="fearful">You need to go higher</h1><h1 class="fearful">You are on 1</h1></div>
+    <div>
+        <div id="round1-1" class="hidden-text fixed slow-blink round1" style="top:25vh; left:25vw; transform: translate(-50%, -50%);">Will</div>
+        <div id="round1-1" class="hidden-text fixed slow-blink round1" style="top:25vh; left:75vw; transform: translate(-50%, -50%);">Will</div>
+        <div id="round1-1" class="hidden-text fixed slow-blink round1" style="top:75vh; left:50vw; transform: translate(-50%, -50%);">Will</div>
+    </div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+        setTimeout(()=>{
+            document.getElementById('dialogue-1').classList.add('visible')
+        }, 800)
+
+        const triggers = document.querySelectorAll('.trigger');
+        triggers.forEach(trigger => {
+            trigger.addEventListener('click', () => {
+            trigger.classList.remove('visible');
+            const targetID = trigger.getAttribute('target');
+            const target = document.getElementById(targetID);
+                if(target){
+                    setTimeout(()=>{
+                        target.classList.add('visible');
+                    }, 800)        
+                }
+            });
+        });
+
+        document.getElementById('dialogue-trigger1').addEventListener('click', () => {
+            startBlink();
+            document.querySelectorAll('.round1').forEach(el => {
+                el.classList.add('visible');
+            })
+            listenForEvents('blinkStopped', 3, ()=>{
+                setTimeout(()=>{
+                    document.querySelectorAll('.round1').forEach(el => {
+                        el.classList.remove('visible');
+                    })
+                    document.getElementById('dialogue-trigger2').classList.add('visible')
+                }, 1000)
+            })
+        })
+    })
+    
+</script>
+{% endblock %}

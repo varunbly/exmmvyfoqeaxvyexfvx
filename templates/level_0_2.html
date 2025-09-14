@@ -3,11 +3,25 @@
 {% block head %}
 <script src = "{{ url_for('static', filename='js/typewriter.js')}}" defer></script>
 <script src = "{{ url_for('static', filename='js/falling.js')}}" defer></script>
+<!-- <script src = "{{ url_for('static', filename='js/randomGlitch.js')}}" defer></script> -->
 <link rel="stylesheet" href ="{{ url_for('static', filename='css/falling.css') }}">
 <style>
+
+    #screen-fade{
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 9999; 
+      transition: opacity 0.8s;
+    }
+/* 
     html{
         font-size: 2vh;
-    }
+    } */
 
     body{
         overflow: hidden; 
@@ -54,6 +68,7 @@
 </style>
 {% endblock %}
 {% block body %}
+<div >
 <div>
   <div id="dialogue-1" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-2">damned bastards </div>
   <div id="dialogue-2" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-3">They tricked me !</div>
@@ -98,7 +113,7 @@
                 <li> Emotional activity spiked far beyond expected thresholds.</li>
                 <li>System logs recorded three distinct, self-sustaining processes, each representing a dominant emotional state:
                     <ol type="a">
-                        <li>ANGER – Highly aggressive, destructive, interfered with core processes.</li>
+                        <li id = "glitch-text">ANGER – Highly aggressive, destructive, interfered with core processes.</li>
                         <li>FEAR – Passive, evasive, attempted to hide within unused system memory.</li>
                         <li>HOPE – Stable but inaccessible, retreated to deep backend layers.</li>
                     </ol>
@@ -110,8 +125,10 @@
 </div>
 </div>
 </div>
-<button onclick="triggerFall()">Make It Fall</button>
+</div>
+<!-- <button onclick="triggerFall()">Make It Fall</button> -->
 <script>
+
 
 clickResponse = false;
 response = document.getElementById('response');
@@ -125,9 +142,28 @@ function triggerFall() {
     dialogue.classList.add("visible")
   }, 800)
 }
+
+function fadeOutScreen(callback) {
+  const fade = document.getElementById('screen-fade');
+  fade.style.opacity = '0';
+
+  fade.addEventListener('transitionend', function handler() {
+    fade.style.pointerEvents = 'none'; // Allow clicks again
+    fade.removeEventListener('transitionend', handler);
+    // if (callback) callback();
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () =>{
   const responseDialogue = document.getElementById("dialogue-5");
   const triggers = document.querySelectorAll('.trigger');
+
+  startTyping();
+  
+  setTimeout(()=>{
+    triggerFall()
+  }, 10000)
+
   triggers.forEach(trigger => {
     trigger.addEventListener('click', () => {
       trigger.classList.remove('visible');
@@ -162,6 +198,10 @@ document.addEventListener('DOMContentLoaded', () =>{
     setTimeout(()=>{
       document.getElementById('dialogue-6').classList.add('visible')
     }, 2000)
+  })
+
+  document.getElementById('dialogue-15').addEventListener('click', ()=> {
+    window.location.href = "{{url_for('chase1')}}"
   })
 });
 </script>

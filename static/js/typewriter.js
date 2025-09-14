@@ -4,7 +4,7 @@ const speed = 5; // milliseconds per character
 
   function typeEffect(el, html, callback) {
     let i = 0;
-    let current = "FEAR";
+    let current = "";
 
     function typing() {
       if (i < html.length) {
@@ -28,7 +28,7 @@ const speed = 5; // milliseconds per character
     typing();
   }
 
-  function startTyping(index = 0) {
+  async function startTyping(index = 0) {
     if (index < elements.length) {
       const el = elements[index];
       const html = el.innerHTML; // keep HTML, including <br>
@@ -37,5 +37,3 @@ const speed = 5; // milliseconds per character
       typeEffect(el, html, () => startTyping(index + 1));
     }
   }
-
-  startTyping();

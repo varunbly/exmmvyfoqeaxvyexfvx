@@ -11,6 +11,13 @@
      font-style: normal;
 }
 
+@font-face {
+     font-family: 'player';
+     src: url(../fonts/Montserrat-SemiBold.ttf) format('opentype');
+     font-weight: normal;
+     font-style: normal;
+}
+
 .vanishing{
      opacity: 0; 
      pointer-events: all;                 
@@ -45,7 +52,7 @@
 }
 
 .player{
-     font-family: 'Times New Roman', Times, serif;
+     font-family: 'player';
      font-size: clamp(1.5rem, 4vw, 2.5rem);
      color: white;
 }
@@ -63,13 +70,14 @@
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.4s ease, visibility 0.4s ease;
+    transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out;
 }
 
 .hidden-text.visible {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
+    transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out;
 }
 
 .full-screen{

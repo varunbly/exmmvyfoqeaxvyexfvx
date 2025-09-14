@@ -1,0 +1,24 @@
+
+  @keyframes fade-blink {
+    0%,100% { opacity: 0; }
+    50%     { opacity: 1; }
+  }
+
+  .stable{
+    filter: brightness(1.5);
+    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+  }
+
+  .slow-blink {
+    --blink-duration: 2s; /* controlled by JS */
+    display: inline-block;
+    cursor: pointer;
+    font-size: 2rem;
+    margin: 12px;
+    opacity: 1;
+  }
+
+  /* Toggle this class to enable blinking animation */
+  .slow-blink.anim {
+    animation: fade-blink var(--blink-duration) infinite ease-in-out;
+  }

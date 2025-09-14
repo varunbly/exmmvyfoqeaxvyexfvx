@@ -1,0 +1,28 @@
+
+    /* Style for each random word */
+    .random-word {
+      position: absolute;
+      white-space: nowrap;   /* avoid wrapping which changes width */
+      user-select: none;
+      pointer-events: auto;
+      transition: transform 0.2s ease, opacity 0.2s,visibility 0.4s ease;
+      opacity: 0.3;
+      z-index: 1;
+    }
+
+    .random-word.hidden-text {
+      position: absolute;
+      white-space: nowrap;   /* avoid wrapping which changes width */
+      user-select: none;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+    /* Optional hover effect */
+    .random-word:hover {
+      filter: brightness(1.5);
+      text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+      opacity: 1;
+    }

@@ -4,7 +4,7 @@ const speed = 5; // milliseconds per character
 
   function typeEffect(el, html, callback) {
     let i = 0;
-    let current = "";
+    let current = "FEAR";
 
     function typing() {
       if (i < html.length) {

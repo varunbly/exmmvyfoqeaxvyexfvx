@@ -53,7 +53,6 @@
     }
 </style>
 {% endblock %}
-
 {% block body %}
 <div>
   <div id="dialogue-1" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-2">damned bastards </div>
@@ -140,14 +139,13 @@ document.addEventListener('DOMContentLoaded', () =>{
         }, 800)
       }
     });
-  
+  });
+
   document.getElementById("dialogue-10").addEventListener('click', ()=>{
     setTimeout(()=>{
       startRain(['COWARD'])
     }, 1500)
   })  
-
-  });
 
   responseDialogue.addEventListener('click', ()=> {
     if(clickResponse){return}
@@ -165,9 +163,6 @@ document.addEventListener('DOMContentLoaded', () =>{
       document.getElementById('dialogue-6').classList.add('visible')
     }, 2000)
   })
-
-
-
 });
 </script>
 

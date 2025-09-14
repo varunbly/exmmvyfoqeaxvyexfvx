@@ -27,6 +27,30 @@ def greet():
     name = data.get("name", "Guest")
     return jsonify({"message": f"Hello, {name}!"})
 
+@app.route("/discarded")
+def chase1():
+    return render_template(f'chase1.html')
+
+@app.route("/getaway")
+def chase2():
+    return render_template(f'chase2.html')
+
+@app.route("/stop")
+def chase3():
+    return render_template(f'chase3.html')
+
+@app.route("/please")
+def chase4():
+    return render_template(f'chase4.html')
+
+@app.route("/letMeGo")
+def chase5():
+    return render_template(f'chase5.html')
+
+@app.route("/leaveMe")
+def chase6():
+    return render_template(f'chase6.html')
+
 @app.route("/test/<int:number>")
 def test(number):
     return render_template(f"test{number}.html")

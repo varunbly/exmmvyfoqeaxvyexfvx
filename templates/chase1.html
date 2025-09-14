@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block head %}
+<script src="{{url_for('static',filename='js/randomWords.js')}}" defer></script>
+<link rel="stylesheet" href="{{url_for('static', filename='css/randomWords.css')}}">
+<style>
+     body{
+        overflow: hidden;
+    }
+
+    .random-word{
+        pointer-events: none;
+    }
+
+    .temp{
+        pointer-events: auto;
+    }
+</style>
+{% endblock %}
+{% block body %}
+<div class="random-container full-screen" style="overflow: hidden; pointer-events: none;">
+    <div id="dialogue-1" class="hidden-text fixed fearful trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-2">You Found Me?!</div>
+    <div id="dialogue-2" class="hidden-text fixed fearful trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-3">I need to Get away!</div>
+    <div id="dialogue-3" class="hidden-text fixed player center column" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);">
+        <h1>....</h1>
+        <h1 id="Follow" class="hidden-text trigger">Follow?</h1>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", ()=>{
+        generateRandomWords(10);
+        fearful = getRuleFromClass('fearful');
+
+        const follow = document.getElementById("Follow")
+
+        document.getElementById("dialogue-2").addEventListener('click', ()=> {
+            setTimeout(()=>{
+                follow.classList.add('visible');
+            }, 1600)
+        });
+
+        createWordWithinBounds("scared", {
+            fonts: [fearful.style.fontFamily],
+            color: fearful.style.color
+        }).then(target => {
+            target.classList.add('trigger', 'temp')
+            target.style.zIndex = "999"
+            target.addEventListener('click', ()=> {
+                target.classList.add('hidden-text')
+                setTimeout(()=>{
+                    document.getElementById('dialogue-1').classList.add('visible')
+                }, 800);
+            });
+
+            target.addEventListener('click', ()=>{
+
+                const randomWords = document.querySelectorAll('.random-word');
+                randomWords.forEach(randomWord => {
+                    randomWord.style.pointerEvents = "none";
+                })
+                
+            })
+        });
+
+        const triggers = document.querySelectorAll('.trigger');
+            triggers.forEach(trigger => {
+                trigger.addEventListener('click', () => {
+                // trigger.classList.remove('random-word');
+                trigger.classList.remove('visible');
+                const targetID = trigger.getAttribute('target');
+                const target = document.getElementById(targetID);
+                    if(target){
+                        setTimeout(()=>{
+                            target.classList.add('visible');
+                        }, 800)        
+                    }
+                });
+            });
+
+        follow.addEventListener('click', ()=>{
+            window.location.href = "{{url_for('chase2')}}"
+        });
+    });
+
+</script>
+{% endblock %}

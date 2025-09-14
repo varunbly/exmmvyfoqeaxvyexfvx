@@ -57,6 +57,14 @@ def chase6():
 def convince():
     return render_template('convince.html')
 
+@app.route("/lose")
+def you_lost():
+    return render_template('lost_screen.html')
+
+@app.route("/youFinallyWin")
+def random():
+    return render_template("you_win.html")
+
 @app.route("/test/<int:number>")
 def test(number):
     return render_template(f"test{number}.html")

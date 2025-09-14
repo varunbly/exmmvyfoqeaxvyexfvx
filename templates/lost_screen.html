@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<style>
+    body{
+        overflow: hidden;
+    }
+</style>
+<div class="center"> <h1 class="player">YOU LOST</h1></div>
+{% endblock %}
+
+{% block body %}
+<div class="full-screen center column">
+    <div class="player">Normally I would have done something with cookies</div><div class="player"> but I don't have time :P</div>
+    <div id="try" class="trigger fearful">Try Again?</div>
+</div>
+
+<script>
+    document.getElementById('try').addEventListener('click', ()=>{
+            window.location.href = "{{url_for('level_1', number=1509)}}"
+        });
+</script>
+{% endblock %}

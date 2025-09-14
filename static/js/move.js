@@ -1,8 +1,8 @@
 
-   function moveElementWithDecision(id, targetX, targetY, duration, keepGoing = false, yesFn = (()=>{}), noFn = (()=>{})){
-    element = document.getElementById(id);
+function moveElementWithDecision(id, targetX, targetY, duration, keepGoing = false, yesFn = (()=>{}), noFn = (()=>{})){
+    let element = document.getElementById(id);
     console.log(window.getComputedStyle(element).height)
-    style = window.getComputedStyle(element)
+    let style = window.getComputedStyle(element)
     
   const startX = parseFloat(style.left) ;
   const startY = parseFloat(style.top) ;
@@ -38,6 +38,52 @@
       } else {
         // Stop and remove immediately
         noFn();
+      }
+    }
+  }
+
+  requestAnimationFrame(animate);
+}
+
+function moveElementWithDeletion(id, targetX, targetY, duration, keepGoing = false){
+    let element = document.getElementById(id);
+    console.log(window.getComputedStyle(element).height)
+    let style = window.getComputedStyle(element)
+    
+  const startX = parseFloat(style.left) ;
+  const startY = parseFloat(style.top) ;
+  const deltaX = targetX - startX;
+  const deltaY = targetY - startY;
+
+  const startTime = performance.now();
+
+  // Easing function for natural acceleration/deceleration
+    function easeInCubic(t) {
+    return t * t * t;
+    }
+
+    function easeInCubicDerivative(t) {
+  return 3 * t * t;
+}
+
+  function animate(time) {
+    let elapsed = (time - startTime) / duration;
+    if (elapsed > 1) elapsed = 1;
+
+    const progress = easeInCubic(elapsed);
+
+    element.style.left = startX + deltaX * progress + "px";
+    element.style.top = startY + deltaY * progress + "px";
+
+    if (elapsed < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      // Reached target point
+      if (keepGoing) {
+        keepMovingOffScreen(element, deltaX, deltaY)
+      } else {
+        // Stop and remove immediately
+        element.remove()
       }
     }
   }

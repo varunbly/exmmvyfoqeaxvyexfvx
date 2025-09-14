@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<style>
+    body{
+        overflow: hidden;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    <div class="dialogues full-screen">
+    <div id="dialogue-1" class="hidden-text fixed player trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-2">You finally won...</div>
+    <div id="dialogue-2" class="hidden-text fixed player trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-3">But there is something more...</div>
+    <div id="dialogue-3" class="hidden-text fixed player trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-4">Happy Birthday Bhaiya</div>
+    <div id="dialogue-4" class="hidden-text fixed player trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-5">I wanted to add more but ran out of time :P</div>
+    <div id="dialogue-5" class="hidden-text fixed player trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-5">So Happy Birthday</div>
+    </div>
+    <script>
+        setTimeout(()=>{
+            document.getElementById('dialogue-1').classList.add('visible')
+        }, 800)
+
+        const triggers = document.querySelectorAll('.trigger');
+        triggers.forEach(trigger => {
+        trigger.addEventListener('click', () => {
+        trigger.classList.remove('visible');
+        const targetID = trigger.getAttribute('target');
+        const target = document.getElementById(targetID);
+            if(target){
+                setTimeout(()=>{
+                    target.classList.add('visible');
+                }, 800)        
+            }
+        });
+    });
+    </script>
+{% endblock %}

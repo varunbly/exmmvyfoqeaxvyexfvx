@@ -59,8 +59,7 @@
         </div>
         <div id="dialogue-15" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-16">you want to challenge me?</div>
         <div id="dialogue-16" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="anger">then come here</div>
-            <div id="anger" class="insane fixed hidden-text" style="top: 40vh ; left: 50vw; transform: translate(-50%, -50%);">Try to stop me!</div>
-            <!-- <div id="fear" class="fearful hidden-text fixed" style="top: 60vh ; left: 50vw; transform: translate(-50%, -50%);">wait wait a sec!?</div> -->
+            <div id="anger" class="insane fixed hidden-text" style="top: 40vh ; left: 50vw; transform: translate(-50%, -50%);cursor: pointer;">Try to stop me!</div>
  
         <div id="dialogue-18" class="hidden-text fixed fearful" style="top: 70vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-18">I don't want to fight!</div>
     </div>
@@ -436,22 +435,17 @@
 
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    moveElementWithDecision('anger', window.innerWidth*0.5, window.innerHeight*0.1, 1000);
-
-    await new Promise(resolve => setTimeout(resolve, 10000));
-
-    changeTextSmoothly(anger, "just call the correct function in the console");
+    moveElementWithDecision('anger', window.innerWidth*0.5, window.innerHeight*0.5, 1000);
 
     await new Promise(resolve => setTimeout(resolve, 1000));
+
+    changeTextSmoothly(anger, "just call the correct function in console");
+
+    await new Promise(resolve => setTimeout(resolve, 10000));
 
     changeTextSmoothly(anger, "Hope will do the rest");
     
 }
-
-        
-
-        
-
 
 </script>
 {% endblock %}

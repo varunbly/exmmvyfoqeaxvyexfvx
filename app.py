@@ -288,7 +288,7 @@ vshdn pb odqjxdjh
 """
         )
         response.headers["Content-Type"] = 'text/plain'
-        response.headers["obxplk"] = 'cfka jb xq qeb doxsb \n vshdn pb odqjxdjh'
+        response.headers["obxplk"] = 'cfka jb xq qeb doxsb vshdn pb odqjxdjh'
     else:
         response = make_response(
             """

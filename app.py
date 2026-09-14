@@ -7,10 +7,9 @@ from flask import Flask, jsonify, request, render_template, url_for, make_respon
 import base64
 from supabase import create_client
 import json
-
-load_dotenv()
-
-supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_SECRET_KEY"))
+app = Flask(__name__)
+app.config.from_prefixed_env()
+supabase = create_client(app.config["SUPABASE_URL"], app.config["SUPABASE_SECRET_KEY"])
 TOKEN_MAX_AGE_SECONDS = 60 * 60 * 24 * 8
 from datetime import datetime, timezone
 
@@ -147,7 +146,7 @@ def available_moves(row, col):
     return moves
 
 
-app = Flask(__name__)
+
 
 @app.route("/")
 def home():

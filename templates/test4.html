@@ -1,0 +1,282 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<style>
+#glitch-text {
+  font-family: 'Courier New', Courier, monospace; /* ensures every character has equal width */
+  font-size: 2rem;
+  color: white;
+  text-shadow: 0 0 5px rgba(255, 0, 255, 0.7),
+               0 0 10px rgba(0, 255, 255, 0.7);
+  letter-spacing: 2px; /* optional: adds spacing for a digital feel */
+  transition: color 0.3s ease;
+  background: black;
+  padding: 20px;
+  display: inline-block;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<h1 id="glitch-text">THE TRUTH IS HIDDEN</h1>
+
+
+
+<!-- <style>
+    body {
+  background: #000;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  font-family: monospace;
+}
+
+.glitch-container {
+  position: relative;
+}
+
+h1 {
+  font-size: 2.5rem;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+/* Glitch effect when hovered */
+h1:hover {
+  color: #f00;
+}
+
+/* Optional flicker/glitch styling */
+h1::before,
+h1::after {
+  content: attr(data-original);
+  position: absolute;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  clip: rect(0, 900px, 0, 0);
+  color: #f00;
+  animation: glitch-anim 2s infinite linear alternate-reverse;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+h1::after {
+  color: #0ff;
+  animation: glitch-anim2 2s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim {
+  0% { clip: rect(0, 9999px, 0, 0); }
+  10% { clip: rect(5px, 9999px, 50px, 0); transform: translate(-5px, -2px); }
+  20% { clip: rect(10px, 9999px, 90px, 0); transform: translate(5px, 0); }
+  30% { clip: rect(20px, 9999px, 80px, 0); transform: translate(-3px, 2px); }
+  40%, 100% { clip: rect(0, 9999px, 0, 0); transform: none; }
+}
+
+@keyframes glitch-anim2 {
+  0% { clip: rect(0, 9999px, 0, 0); }
+  10% { clip: rect(15px, 9999px, 65px, 0); transform: translate(3px, 1px); }
+  20% { clip: rect(30px, 9999px, 90px, 0); transform: translate(-2px, -1px); }
+  30% { clip: rect(45px, 9999px, 70px, 0); transform: translate(2px, -2px); }
+  40%, 100% { clip: rect(0, 9999px, 0, 0); transform: none; }
+}
+</style> -->
+<!-- 
+<script>
+  const swapElement = document.getElementById("swap-text");
+
+// Function to temporarily swap two random letters and then revert them
+function temporarySwap(text, duration = 500) {
+  if (text.length < 2) return text; // Can't swap if less than 2 chars
+
+  const arr = text.split("");
+
+  // Pick two different random indices
+  let i = Math.floor(Math.random() * arr.length);
+  let j;
+  do {
+    j = Math.floor(Math.random() * arr.length);
+  } while (i === j);
+
+  // Swap the characters
+  [arr[i], arr[j]] = [arr[j], arr[i]];
+
+  // Show swapped version
+  swapElement.textContent = arr.join("");
+
+  // Revert back after given duration
+  setTimeout(() => {
+    swapElement.textContent = text;
+  }, duration);
+}
+
+// Function to run periodically
+function startTemporarySwaps(element, interval = 2000, duration = 500) {
+  setInterval(() => {
+    const originalText = element.textContent;
+    temporarySwap(originalText, duration);
+  }, interval);
+}
+
+// Start the glitch effect
+startTemporarySwaps(swapElement, 100, 50); 
+
+// const glitchElement = document.getElementById("glitch-text");
+// const originalText = glitchElement.getAttribute("data-original");
+// const hoverText = glitchElement.getAttribute("data-hover");
+
+// const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+
+// let glitching = false; // prevent overlapping glitches
+
+// // --- Random glitch effect ---
+// async function randomGlitch() {
+//   if (glitching) return; // skip if glitch already running
+//   glitching = true;
+
+//   const textArray = originalText.split("");
+//   const index = Math.floor(Math.random() * textArray.length);
+//   const originalChar = textArray[index];
+
+//   // Replace with a random character
+//   textArray[index] = chars[Math.floor(Math.random() * chars.length)];
+//   glitchElement.textContent = textArray.join("");
+
+//   // Revert back after a short delay
+//   setTimeout(() => {
+//     textArray[index] = originalChar;
+//     glitchElement.textContent = textArray.join("");
+//     glitching = false; // ready for the next glitch
+//   }, 150); // much shorter to avoid jitter
+// }
+
+// // Run random glitch every 800-1500ms
+// setInterval(() => {
+//   if (!glitchElement.classList.contains("hovering")) {
+//     randomGlitch();
+//   }
+// }, Math.floor(Math.random() * 700) + 800); // random interval
+
+// async function glitchTransition(fromText, toText) {
+//   glitching = true;
+
+//   const maxLength = Math.max(fromText.length, toText.length);
+//   let currentText = fromText.split("");
+
+//   // Expand arrays so both texts are equal length
+//   while (currentText.length < maxLength) currentText.push(" ");
+//   const targetArray = toText.padEnd(maxLength, " ").split("");
+
+//   for (let step = 0; step < maxLength; step++) {
+//     // Randomly pick positions to glitch
+//     const positions = [];
+//     for (let i = 0; i < 3; i++) {
+//       positions.push(Math.floor(Math.random() * maxLength));
+//     }
+
+//     const frame = currentText.map((char, i) => {
+//       if (positions.includes(i) && targetArray[i] !== char) {
+//         return randomChar(); // temporary glitch char
+//       }
+//       return char;
+//     });
+
+//     glitchElement.textContent = frame.join("");
+
+//     await new Promise(r => setTimeout(r, 50));
+
+//     // After glitching, slowly lock in correct characters
+//     for (let i = 0; i < maxLength; i++) {
+//       if (currentText[i] !== targetArray[i]) {
+//         currentText[i] = targetArray[i];
+//         break; // one character per frame
+//       }
+//     }
+//   }
+
+//   glitchElement.textContent = targetArray.join("");
+//   glitching = false;
+// }
+
+// // --- Event listeners ---
+// glitchElement.addEventListener("mouseenter", () => {
+//   if (!glitching) glitchTransition(originalText, hoverText);
+// });
+
+// glitchElement.addEventListener("mouseleave", () => {
+//   if (!glitching) glitchTransition(hoverText, originalText);
+// });
+
+// // --- Hover behavior ---
+// glitchElement.addEventListener("mouseenter", () => {
+//   glitchElement.classList.add("hovering");
+//   glitchToNewMessage(originalText, hoverText);
+// });
+
+// glitchElement.addEventListener("mouseleave", () => {
+//   glitchElement.classList.remove("hovering");
+//   glitchToNewMessage(hoverText, originalText);
+// });
+
+// // --- Function to glitch entire text into another ---
+// function glitchToNewMessage(from, to) {
+//   const maxLength = Math.max(from.length, to.length);
+//   let currentFrame = from.split("");
+
+//   let i = 0;
+//   const interval = setInterval(() => {
+//     currentFrame = currentFrame.map((char, index) => {
+//       if (index >= to.length) return " ";
+//     //   if (Math.random() > 0.8) return chars[Math.floor(Math.random() * chars.length)];
+//       return to[index];
+//     });
+
+//     glitchElement.textContent = currentFrame.join("");
+//     i++;
+
+//     // stop when text fully matches
+//     if (currentFrame.join("") === to) {
+//       clearInterval(interval);
+//     }
+//   }, 50);
+// }
+</script> -->
+<script>
+const glitchElement = document.getElementById("glitch-text");
+const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+const originalText = glitchElement.textContent;
+
+// Keep a copy of the text so multiple glitches can happen at once
+let currentText = originalText.split("");
+
+function randomGlitchSwap() {
+  const index = Math.floor(Math.random() * currentText.length);
+  const originalChar = originalText[index]; // original character for this position
+  const randomChar = chars[Math.floor(Math.random() * chars.length)];
+
+  // If it's already glitched, do nothing
+  if (currentText[index] !== originalChar) return;
+
+  // Replace one character with a random one
+  currentText[index] = randomChar;
+  glitchElement.textContent = currentText.join("");
+
+  // Restore this single character after a delay
+  setTimeout(() => {
+    currentText[index] = originalChar;
+    glitchElement.textContent = currentText.join("");
+  }, 600); // restore after 150ms
+}
+
+// Run the glitch randomly
+setInterval(() => {
+  randomGlitchSwap();
+}, Math.floor(Math.random() * 200) + 100);
+
+</script>
+{% endblock %}

@@ -1,0 +1,489 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<script src="{{url_for('static',filename='js/move.js')}}" defer></script>
+<style>
+    body{
+        overflow: hidden;
+    }
+
+    @keyframes shake{0%{transform:translate3d(0,0,0) rotate(-2deg)}50%{transform:translate3d(3px,-2px,0) rotate(2deg)}100%{transform:translate3d(0,0,0) rotate(-2deg)}}
+    .projectile{
+        position:absolute;
+        color:crimson;padding:10px;border-radius:6px;z-index:20;
+        transform:rotate(-3deg);animation:shake 600ms infinite;
+    }
+
+    #health-container {
+        position: relative;
+        width: 200px;         /* Width of the health bar */
+        height: 25px;         /* Height of the health bar */
+        border: 2px solid #000; /* Black border */
+        background: #555;      /* Background color when empty */
+        border-radius: 5px;
+        overflow: hidden;      /* Clips the inner bar inside */
+    }
+
+    #health-bar {
+        width: 100%;           /* Full health by default */
+        height: 100%;
+        background: linear-gradient(to right, #4caf50, #3e8e41); /* Green gradient */
+        transition: width 0.3s ease; /* Smooth animation */
+    }
+
+    #fear-hitbox {
+        user-select: none;
+        touch-action: none;
+    }
+
+</style>
+
+{% endblock %}
+
+{% block body %}
+<div>
+    <div class="dialogues full-screen">
+        <div id="dialogue-1" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-2">Why are you here?</div>
+        <div id="dialogue-2" class="hidden-text fixed fearful trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-3">I-I brought him here..</div>
+        <div id="dialogue-3" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-4">Wow, So all the cowards are here</div>
+        <div id="dialogue-4" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-5">just that pretentious hope is missing</div>
+        <div id="dialogue-5" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-6">So, why are you here?</div>
+        <div id="dialogue-6" class="hidden-text fixed trigger center column" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-7">
+           <div class="insane"> If it's about joining me then its- </div>
+            <div id="cutoff" class="player hidden-text">We are here to defeat you</div>
+        </div>
+        <div id="dialogue-7" class="hidden-text fixed player trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-8">We can't let you kill anyone</div>
+        <div id="dialogue-8" class="hidden-text fixed fearful trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-9">W-We?</div>
+        <div id="dialogue-9" class="hidden-text fixed player trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-10">We would also like to help you</div>
+        <div id="dialogue-10" class="hidden-text fixed player trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-11">If you would let us</div>
+        <div id="dialogue-11" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-12">......</div>
+        <div id="dialogue-12" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-13">Help me?</div>
+        <div id="dialogue-13" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-14">defeat me?</div>
+        <div id="dialogue-14" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-15">
+            <div class="insane"> That's got to be the best joke I know</div>
+        </div>
+        <div id="dialogue-15" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-16">you want to challenge me?</div>
+        <div id="dialogue-16" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="anger">then come here</div>
+            <div id="anger" class="insane fixed hidden-text" style="top: 40vh ; left: 50vw; transform: translate(-50%, -50%);cursor: pointer;">Try to stop me!</div>
+ 
+        <div id="dialogue-18" class="hidden-text fixed fearful" style="top: 70vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-18">I don't want to fight!</div>
+    </div>
+    <div id="game-area" class="full-screen fixed", style="left: 0; top: 0; pointer-events: none;">
+        <div id="health-container" class="hidden-text" style="left: 50vw; top: 90vh; pointer-events: none; transform: translate(-50%, -50%);">
+            <div id="health-bar"></div>
+        </div>
+        <!-- Draggable "fear" dialogue object: this is now the player's hitbox.
+             Drag it around to intercept/avoid incoming projectiles instead of moving the mouse. -->
+        <div id="fear-hitbox" class="hidden-text fearful" style="position: fixed; top: 70vh; left: 50vw; transform: translate(-50%, -50%); cursor: grab; z-index: 30; pointer-events: auto; padding: 10px; border-radius: 6px;">W-We?</div>
+    </div>
+</div>
+
+<script>
+
+    heath = 100;
+
+    function setHealth(percentage) {
+    const healthBar = document.getElementById('health-bar');
+
+    // Ensure percentage stays between 0 and 100
+    percentage = Math.max(0, Math.min(percentage, 100));
+
+    healthBar.style.width = percentage + '%';
+
+    // Optional: Change color based on health
+    if (percentage > 60) {
+        healthBar.style.background = 'linear-gradient(to right, #4caf50, #3e8e41)'; // Green
+    } else if (percentage > 30) {
+        healthBar.style.background = 'linear-gradient(to right, #ff9800, #e65100)'; // Orange
+    } else {
+        healthBar.style.background = 'linear-gradient(to right, #f44336, #b71c1c)'; // Red
+    }
+
+    if(percentage <= 0){
+        window.location.href = "{{url_for('you_lost')}}"
+    }
+    }
+
+    let projId = 0;
+    fear = document.getElementById('fear');
+    anger = document.getElementById('anger');
+
+    // --- Draggable hitbox setup ---
+    const fearHitbox = document.getElementById('fear-hitbox');
+    let isDraggingHitbox = false;
+
+    fearHitbox.addEventListener('mousedown', (e) => {
+        isDraggingHitbox = true;
+        fearHitbox.style.cursor = 'grabbing';
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDraggingHitbox) return;
+        fearHitbox.style.left = e.clientX + 'px';
+        fearHitbox.style.top = e.clientY + 'px';
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (isDraggingHitbox){
+            isDraggingHitbox = false;
+            fearHitbox.style.cursor = 'grab';
+        }
+    });
+
+    // Current center position of the draggable hitbox, used as the target
+    // projectiles fly toward (replaces the old event.clientX/clientY usage).
+    function getFearPos(){
+        const rect = fearHitbox.getBoundingClientRect();
+        return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+    }
+
+    // Checks overlap between the hitbox and any live projectile, dealing
+    // damage once per projectile on contact (replaces the old mouseenter hit check).
+    function checkCollisions(){
+        const fRect = fearHitbox.getBoundingClientRect();
+        document.querySelectorAll('.projectile').forEach(proj => {
+            if (proj.dataset.hit === "true") return;
+            const pRect = proj.getBoundingClientRect();
+            const overlap = !(fRect.right < pRect.left ||
+                               fRect.left > pRect.right ||
+                               fRect.bottom < pRect.top ||
+                               fRect.top > pRect.bottom);
+            if (overlap){
+                proj.dataset.hit = "true";
+                heath -= 10;
+                setHealth(heath);
+                proj.remove();
+            }
+        });
+    }
+    setInterval(checkCollisions, 50);
+
+    function createProj(x, y, text = 'kill'){
+        contextElement = document.getElementById('game-area')
+        contextElement.style.pointerEvents = 'auto'
+        temp = document.createElement('div')
+        temp.style.position = 'absolute';
+        temp.style.top = y;
+        temp.style.left = x;
+        temp.id = projId;
+        projId ++;
+        temp.style.transform= "translate(-50%, -50%)"
+        temp.textContent = text;
+        temp.classList.add('insane', 'projectile');
+        contextElement.appendChild(temp);
+        return temp
+    }
+
+    function changeTextSmoothly(element, newText) {
+        element.classList.remove('visible');
+
+        // Wait for fade-out to complete
+        setTimeout(() => {
+            element.textContent = newText;
+            element.classList.add('visible'); // Fade back in
+        }, 500); // Match CSS transition duration
+    }
+
+
+    setTimeout(()=>{
+            document.getElementById('dialogue-1').classList.add('visible')
+        }, 800)
+
+    const triggers = document.querySelectorAll('.trigger');
+    triggers.forEach(trigger => {
+        trigger.addEventListener('click', () => {
+        trigger.classList.remove('visible');
+        const targetID = trigger.getAttribute('target');
+        const target = document.getElementById(targetID);
+            if(target){
+                setTimeout(()=>{
+                    target.classList.add('visible');
+                }, 800)        
+            }
+        });
+    });
+
+    document.getElementById("dialogue-5").addEventListener('click', () => {
+        setTimeout(()=>{
+            document.getElementById("cutoff").classList.add('visible')
+        }, 1600)
+    });
+    
+    document.getElementById("dialogue-16").addEventListener('click', () => {
+        setTimeout(()=>{
+            // console.log('here')
+            document.getElementById('fear').classList.add('visible')
+        },1400)
+    });
+
+    function MayOrMayNotBeTheFunctionYouAreLookingFor(){
+        window.location.href = "{{url_for('random')}}"
+    }
+
+    document.getElementById("anger").addEventListener('click', () => {
+        moveElementWithDecision('anger', window.innerWidth*0.5, window.innerHeight*0.1, 1000);
+        // moveElementWithDecision('fear', window.innerWidth*0.5, window.innerHeight*0.9, 1000);
+        startGame();
+    });
+
+    async function startGame() {
+        
+            console.log("here");
+            document.getElementById('health-container').classList.add('visible')
+            document.getElementById('fear-hitbox').classList.add('visible')
+
+            await new Promise(resolve => setTimeout(resolve, 1200));
+
+            temp0 = createProj("85vw", "20vh")
+            temp1 = createProj("25vw", "40vh")
+            temp2 = createProj("65vw", "40vh")
+            temp3 = createProj("5vw", "20vh")
+
+            // await new Promise(resolve => setTimeout(resolve, 800));
+
+            // changeTextSmoothly(fear, "don't do this!")
+
+            await new Promise(resolve => setTimeout(resolve, 800));
+
+            changeTextSmoothly(anger, "Here it comes!")
+
+            await new Promise(resolve => setTimeout(resolve, 400));
+        {
+            const pos = getFearPos();
+            moveElementWithDeletion('1', pos.x, pos.y, 1000, true);
+            moveElementWithDeletion('2', pos.x, pos.y, 1000, true);
+            moveElementWithDeletion('3', pos.x, pos.y, 1000, true);
+            moveElementWithDeletion('0', pos.x, pos.y, 1000, true);
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        changeTextSmoothly(anger, "Don't get comfortable!")
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+            temp4 = createProj("85vw", "20vh")
+            temp5 = createProj("25vw", "20vh")
+            temp6 = createProj("65vw", "20vh")
+            temp7 = createProj("5vw", "20vh")
+            temp8 = createProj("45vw", "20vh")
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        moveElementWithDeletion('4', window.innerWidth*0.85, window.innerHeight*1,1000 ,true);
+        moveElementWithDeletion('5', window.innerWidth*0.25, window.innerHeight*1.1, 1000,true);
+        moveElementWithDeletion('6',  window.innerWidth*0.65, window.innerHeight*1.1,1000 ,true);
+        moveElementWithDeletion('7', window.innerWidth*0.05, window.innerHeight*1.1, 1000,true);
+        moveElementWithDeletion('8', window.innerWidth*0.45, window.innerHeight*1.1, 1000,true);
+
+         await new Promise(resolve => setTimeout(resolve, 200));
+        
+            temp9 = createProj("85vw", "10vh")
+            temp10 = createProj("85vw", "30vh")
+            temp11 = createProj("85vw", "50vh")
+            temp12 = createProj("85vw", "70vh")
+
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        moveElementWithDeletion('9', window.innerWidth*0.0, window.innerHeight*0.1,1000 ,true);
+        moveElementWithDeletion('10', window.innerWidth*0.0, window.innerHeight*0.3, 1000,true);
+        moveElementWithDeletion('11',  window.innerWidth*0.0, window.innerHeight*0.5,1000 ,true);
+        moveElementWithDeletion('12', window.innerWidth*0.0, window.innerHeight*0.7, 1000,true);
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        changeTextSmoothly(anger, "still standing? not for Long!")
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+            for (let i = 0; i <10; i++){
+                temp = createProj("50vw", "50vh")
+                await new Promise(resolve => setTimeout(resolve, 300));
+                {
+                    const pos = getFearPos();
+                    moveElementWithDeletion(temp.id, pos.x, pos.y, 1000, true);
+                }
+                await new Promise(resolve => setTimeout(resolve, 300));
+            }
+
+        changeTextSmoothly(anger, "let's get serious!")
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+            for (let i = 0; i <10; i++){
+                temp = createProj("50vw", "50vh")
+                await new Promise(resolve => setTimeout(resolve, 300));
+                {
+                    const pos = getFearPos();
+                    moveElementWithDeletion(temp.id, pos.x, pos.y, 500, true);
+                }
+                await new Promise(resolve => setTimeout(resolve, 300));
+            }
+
+        changeTextSmoothly(anger, "you are not dead?!");
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        temp4 = createProj("85vw", "20vh")
+        temp5 = createProj("25vw", "20vh")
+        temp6 = createProj("65vw", "20vh")
+        temp7 = createProj("5vw", "20vh")
+        temp8 = createProj("45vw", "20vh")
+
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        moveElementWithDeletion(temp4.id, window.innerWidth*0.85, window.innerHeight*1,400 ,true);
+        moveElementWithDeletion(temp5.id, window.innerWidth*0.25, window.innerHeight*1.1, 400,true);
+        moveElementWithDeletion(temp6.id,  window.innerWidth*0.65, window.innerHeight*1.1,400 ,true);
+        moveElementWithDeletion(temp7.id, window.innerWidth*0.05, window.innerHeight*1.1, 400,true);
+        moveElementWithDeletion(temp8.id, window.innerWidth*0.45, window.innerHeight*1.1, 400,true);
+
+            temp9 = createProj("85vw", "10vh")
+            temp10 = createProj("85vw", "30vh")
+            temp11 = createProj("85vw", "50vh")
+            temp12 = createProj("85vw", "70vh")
+
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        moveElementWithDeletion(temp9.id, window.innerWidth*0.0, window.innerHeight*0.1,400 ,true);
+        moveElementWithDeletion(temp10.id, window.innerWidth*0.0, window.innerHeight*0.3, 400,true);
+        moveElementWithDeletion(temp11.id,  window.innerWidth*0.0, window.innerHeight*0.5,400 ,true);
+        moveElementWithDeletion(temp12.id, window.innerWidth*0.0, window.innerHeight*0.7, 400,true);
+
+        
+        for (let i = 0; i <10; i++){
+            temp = createProj("50vw", "50vh")
+            await new Promise(resolve => setTimeout(resolve, 300));
+            {
+                const pos = getFearPos();
+                moveElementWithDeletion(temp.id, pos.x, pos.y, 200, true);
+            }
+            await new Promise(resolve => setTimeout(resolve, 200));
+        }
+
+    changeTextSmoothly(anger, "Ok I am going all in now!");
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+        temp4 = createProj("85vw", "20vh")
+        temp5 = createProj("25vw", "20vh")
+        temp6 = createProj("65vw", "20vh")
+        temp7 = createProj("5vw", "20vh")
+        temp8 = createProj("45vw", "20vh")
+
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        moveElementWithDeletion(temp4.id, window.innerWidth*0.85, window.innerHeight*1,400 ,true);
+        moveElementWithDeletion(temp5.id, window.innerWidth*0.25, window.innerHeight*1.1, 400,true);
+        moveElementWithDeletion(temp6.id,  window.innerWidth*0.65, window.innerHeight*1.1,400 ,true);
+        moveElementWithDeletion(temp7.id, window.innerWidth*0.05, window.innerHeight*1.1, 400,true);
+        moveElementWithDeletion(temp8.id, window.innerWidth*0.45, window.innerHeight*1.1, 400,true);
+
+            temp9 = createProj("85vw", "10vh")
+            temp10 = createProj("85vw", "30vh")
+            temp11 = createProj("85vw", "50vh")
+            temp12 = createProj("85vw", "70vh")
+
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        moveElementWithDeletion(temp9.id, window.innerWidth*0.0, window.innerHeight*0.1,400 ,true);
+        moveElementWithDeletion(temp10.id, window.innerWidth*0.0, window.innerHeight*0.3, 400,true);
+        moveElementWithDeletion(temp11.id,  window.innerWidth*0.0, window.innerHeight*0.5,400 ,true);
+        moveElementWithDeletion(temp12.id, window.innerWidth*0.0, window.innerHeight*0.7, 400,true);
+
+         await new Promise(resolve => setTimeout(resolve, 200));
+
+        moveElementWithDeletion(temp4.id, window.innerWidth*0.85, window.innerHeight*1,400 ,true);
+        moveElementWithDeletion(temp5.id, window.innerWidth*0.25, window.innerHeight*1.1, 400,true);
+        moveElementWithDeletion(temp6.id,  window.innerWidth*0.65, window.innerHeight*1.1,400 ,true);
+        moveElementWithDeletion(temp7.id, window.innerWidth*0.05, window.innerHeight*1.1, 400,true);
+        moveElementWithDeletion(temp8.id, window.innerWidth*0.45, window.innerHeight*1.1, 400,true);
+
+            temp9 = createProj("85vw", "10vh")
+            temp10 = createProj("85vw", "30vh")
+            temp11 = createProj("85vw", "50vh")
+            temp12 = createProj("85vw", "70vh")
+
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        moveElementWithDeletion(temp9.id, window.innerWidth*0.0, window.innerHeight*0.1,400 ,true);
+        moveElementWithDeletion(temp10.id, window.innerWidth*0.0, window.innerHeight*0.3, 400,true);
+        moveElementWithDeletion(temp11.id,  window.innerWidth*0.0, window.innerHeight*0.5,400 ,true);
+        moveElementWithDeletion(temp12.id, window.innerWidth*0.0, window.innerHeight*0.7, 400,true);
+
+        
+        for (let i = 0; i <10; i++){
+            temp = createProj("50vw", "50vh")
+            await new Promise(resolve => setTimeout(resolve, 300));
+            {
+                const pos = getFearPos();
+                moveElementWithDeletion(temp.id, pos.x, pos.y, 200, true);
+            }
+            await new Promise(resolve => setTimeout(resolve, 200));
+        }
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    changeTextSmoothly(anger, "Ok you win!");
+
+    await new Promise(resolve => setTimeout(resolve, 900));
+
+    for(let i = 0; i <= 10; i++){
+            temp4 = createProj("85vw", "20vh")
+            temp5 = createProj("25vw", "20vh")
+            temp6 = createProj("65vw", "20vh")
+            temp7 = createProj("5vw", "20vh")
+            temp8 = createProj("45vw", "20vh")
+
+
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+        moveElementWithDeletion(temp4.id, window.innerWidth*0.85, window.innerHeight*1,400 ,true);
+        moveElementWithDeletion(temp5.id, window.innerWidth*0.25, window.innerHeight*1.1, 400,true);
+        moveElementWithDeletion(temp6.id,  window.innerWidth*0.65, window.innerHeight*1.1,400 ,true);
+        moveElementWithDeletion(temp7.id, window.innerWidth*0.05, window.innerHeight*1.1, 400,true);
+        moveElementWithDeletion(temp8.id, window.innerWidth*0.45, window.innerHeight*1.1, 400,true);
+
+            temp9 = createProj("85vw", "10vh")
+            temp10 = createProj("85vw", "30vh")
+            temp11 = createProj("85vw", "50vh")
+            temp12 = createProj("85vw", "70vh")
+
+     await new Promise(resolve => setTimeout(resolve, 200));
+
+    moveElementWithDeletion(temp9.id, window.innerWidth*0.0, window.innerHeight*0.1,400 ,true);
+    moveElementWithDeletion(temp10.id, window.innerWidth*0.0, window.innerHeight*0.3, 400,true);
+    moveElementWithDeletion(temp11.id,  window.innerWidth*0.0, window.innerHeight*0.5,400 ,true);
+    moveElementWithDeletion(temp12.id, window.innerWidth*0.0, window.innerHeight*0.7, 400,true);
+
+    }
+
+    for (let i = 0; i <10; i++){
+        temp = createProj("50vw", "50vh")
+        await new Promise(resolve => setTimeout(resolve, 300));
+        {
+            const pos = getFearPos();
+            moveElementWithDeletion(temp.id, pos.x, pos.y, 200, true);
+        }
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    
+    changeTextSmoothly(anger, "Ok fine!");
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    moveElementWithDecision('anger', window.innerWidth*0.5, window.innerHeight*0.5, 1000);
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    changeTextSmoothly(anger, "just call the correct function in console");
+
+    await new Promise(resolve => setTimeout(resolve, 10000));
+
+    changeTextSmoothly(anger, "Hope will do the rest");
+    
+}
+
+</script>
+{% endblock %}

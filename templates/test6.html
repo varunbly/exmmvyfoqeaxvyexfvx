@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Simple Chat UI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="{{ url_for('static', filename='js/main.js')}}" defer></script>
+    <link rel="stylesheet" href ="{{ url_for('static', filename='css/main.css') }}">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #111;
+      color: #fff;
+    }
+
+    /* Chat area */
+    #chat-container {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    .message-card {
+      position: relative;
+      background: #1e1e1e;
+      border-radius: 8px;
+      padding: 12px 12px 12px 18px; /* extra left space */
+      margin-bottom: 10px;
+      max-width: 70%;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      animation: fadeIn 0.2s ease;
+    }
+
+    .message-card.user {
+      margin-left: auto;
+    }
+
+    /* Thin color bar */
+    .message-card::before {
+      content: "";
+      position: absolute;
+      left: 5px;
+      top: 8px;
+      bottom: 8px;
+      width: 4px;
+      background: #00ff88; /* accent color */
+      border-radius: 4px;
+    }
+
+    .message-card.user::before {
+      background: #00ff88;
+    }
+
+    .message-card.hope::before{
+      background: #ffeb14;
+    }
+
+    .message-card.system::before {
+      background: #ff4444;
+    }
+
+    .message-card.thought::before {
+      background: #ffaa00;
+    }
+
+
+    /* Input area */
+    #input-bar {
+      display: flex;
+      padding: 12px;
+      border-top: 1px solid #333;
+      background: #0d0d0d;
+    }
+
+    #chat-input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      outline: none;
+      font-size: 14px;
+    }
+
+    #send-btn {
+      margin-left: 8px;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      background: #00ff88;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    #send-btn:hover {
+      background: #00cc6f;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="chat-container"></div>
+
+  <div id="input-bar">
+    <input id="chat-input" type="text" placeholder="Type a message..." />
+    <button id="send-btn">Send</button>
+  </div>
+
+  <script>
+    const chatContainer = document.getElementById("chat-container");
+    const chatInput = document.getElementById("chat-input");
+    const sendBtn = document.getElementById("send-btn");
+
+
+    function addMessage(text, type = "user") {
+      if (!text.trim()) return;
+
+      const card = document.createElement("div");
+      card.className = "message-card " + type;
+      card.textContent = text;
+
+      chatContainer.appendChild(card);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    sendBtn.addEventListener("click", () => {
+      addMessage(chatInput.value);
+      chatInput.value = "";
+    });
+
+    chatInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        addMessage(chatInput.value);
+        chatInput.value = "";
+      }
+    });
+
+    addMessage("If you are reading this, know that I am dead", type = "hope")
+    addMessage("This was meant to be a chat room where you, anger and hope and chat with each other, unfortunately I was never able to finish this ", type = "hope")
+    addMessage("For now, just go to ", type = "hope")
+  </script>
+
+</body>
+</html>

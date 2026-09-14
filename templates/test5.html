@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<style>
+    /* Base glitch class */
+.glitch-text {
+  position: relative;
+  display: inline-block;
+  color: white;
+  font-family: monospace;
+  font-size: 2.5rem;
+  text-transform: uppercase;
+  animation: glitch-idle 5s infinite; /* triggers random glitching */
+}
+
+/* Create two ghost layers for glitch colors */
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  overflow: hidden;
+  color: white;
+  opacity: 0.8;
+  clip: rect(0, 0, 0, 0); /* initially hidden */
+}
+
+/* Red offset */
+.glitch-text::before {
+  color: #ff0000;
+  z-index: -1;
+  animation: glitch-before 5s infinite;
+}
+
+/* Cyan offset */
+.glitch-text::after {
+  color: #00ffff;
+  z-index: -2;
+  animation: glitch-after 5s infinite;
+}
+
+/* Idle subtle flicker */
+@keyframes glitch-idle {
+  0%, 97%, 100% {
+    text-shadow: none;
+  }
+  98% {
+    text-shadow: 2px 2px #ff0000, -2px -2px #00ffff;
+  }
+  99% {
+    text-shadow: -2px 2px #ff0000, 2px -2px #00ffff;
+  }
+}
+
+/* Red layer random glitch */
+@keyframes glitch-before {
+  0%, 94%, 100% {
+    clip: rect(0, 0, 0, 0);
+    transform: translate(0, 0);
+  }
+  95% {
+    clip: rect(5px, 9999px, 15px, 0);
+    transform: translate(-3px, -3px);
+  }
+  96% {
+    clip: rect(10px, 9999px, 20px, 0);
+    transform: translate(3px, 3px);
+  }
+  97% {
+    clip: rect(15px, 9999px, 25px, 0);
+    transform: translate(-2px, 2px);
+  }
+}
+
+/* Cyan layer random glitch */
+@keyframes glitch-after {
+  0%, 94%, 100% {
+    clip: rect(0, 0, 0, 0);
+    transform: translate(0, 0);
+  }
+  95% {
+    clip: rect(2px, 9999px, 12px, 0);
+    transform: translate(3px, -3px);
+  }
+  96% {
+    clip: rect(8px, 9999px, 18px, 0);
+    transform: translate(-3px, 2px);
+  }
+  97% {
+    clip: rect(12px, 9999px, 22px, 0);
+    transform: translate(2px, -2px);
+  }
+}
+
+</style>
+{% endblock %}
+
+{% block body %}
+<h1 class="glitch-text">SYSTEM FAILURE</h1>
+
+{% endblock %}

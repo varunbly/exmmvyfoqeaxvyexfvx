@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<style>
+    body{
+        overflow: hidden;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    <div class="dialogues full-screen">
+    <div id="dialogue-1" class="hidden-text fixed fearful trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-2">Hmm, this is not right</div>
+    <div id="dialogue-2" class="hidden-text fixed insane trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-3">Yes, this whole time I hear that bastard buzzing</div>
+    <div id="dialogue-3" class="hidden-text fixed fearful trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-4">Hope?</div>
+    <div id="dialogue-4" class="hidden-text fixed fearful trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-5">I Hear if too, like he is calling something</div>
+    <div id="dialogue-5" class="hidden-text fixed fearful trigger" style="top: 50vh ; left: 50vw; transform: translate(-50%, -50%);" target ="dialogue-5">Must listen carefully</div>
+    </div>
+    <script>
+        setTimeout(()=>{
+            document.getElementById('dialogue-1').classList.add('visible')
+        }, 800)
+
+        const triggers = document.querySelectorAll('.trigger');
+        triggers.forEach(trigger => {
+        trigger.addEventListener('click', () => {
+        trigger.classList.remove('visible');
+        const targetID = trigger.getAttribute('target');
+        const target = document.getElementById(targetID);
+            if(target){
+                setTimeout(()=>{
+                    target.classList.add('visible');
+                }, 800)        
+            }
+        });
+    });
+    </script>
+{% endblock %}

@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<script src="{{url_for('static',filename='js/move.js')}}" defer></script>
+<style>
+    body{
+        overflow: hidden;
+    }
+
+    @keyframes shake{0%{transform:translate3d(0,0,0) rotate(-2deg)}50%{transform:translate3d(3px,-2px,0) rotate(2deg)}100%{transform:translate3d(0,0,0) rotate(-2deg)}}
+    @keyframes screenShake{0%{transform:translate(0,0)}25%{transform:translate(-10px,5px)}50%{transform:translate(10px,-5px)}75%{transform:translate(-5px,-10px)}100%{transform:translate(0,0)}}
+    .screen-shake{animation:screenShake 0.5s ease-in-out}
+    .projectile{
+        position:absolute;
+        color:crimson;
+        padding:10px;
+        border-radius:6px;
+        z-index:20;
+        transform:rotate(-3deg);
+        animation:shake 600ms infinite;
+    }
+
+    #health-container {
+        position: relative;
+        width: 200px;
+        height: 25px;
+        border: 2px solid #000;
+        background: #555;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+    #health-bar {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to right, #4caf50, #3e8e41);
+        transition: width 0.3s ease;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div>
+    <div class="dialogues full-screen">
+        <div id="anger" class="insane fixed hidden-text" style="top: 40vh; left: 50vw; transform: translate(-50%, -50%); cursor: pointer;">Try to stop me!</div>
+    </div>
+    <div id="game-area" class="full-screen fixed" style="left: 0; top: 0; pointer-events: none;">
+        <div id="health-container" class="hidden-text" style="left: 50vw; top: 90vh; pointer-events: none; transform: translate(-50%, -50%);">
+            <div id="health-bar"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+let health = 100;
+let projId = 0;
+const anger = document.getElementById('anger');
+
+function setHealth(percentage) {
+    const healthBar = document.getElementById('health-bar');
+    percentage = Math.max(0, Math.min(percentage, 100));
+    healthBar.style.width = percentage + '%';
+
+    if (percentage > 60) {
+        healthBar.style.background = 'linear-gradient(to right, #4caf50, #3e8e41)';
+    } else if (percentage > 30) {
+        healthBar.style.background = 'linear-gradient(to right, #ff9800, #e65100)';
+    } else {
+        healthBar.style.background = 'linear-gradient(to right, #f44336, #b71c1c)';
+    }
+
+    if(percentage <= 0){
+        window.location.href = "{{url_for('you_lost')}}"
+    }
+}
+
+function createProj(x, y, text = 'kill'){
+    const contextElement = document.getElementById('game-area');
+    contextElement.style.pointerEvents = 'auto';
+    const temp = document.createElement('div');
+    temp.style.position = 'absolute';
+    temp.style.top = y;
+    temp.style.left = x;
+    temp.id = projId;
+    projId++;
+    temp.style.transform = "translate(-50%, -50%)";
+    temp.textContent = text;
+    temp.classList.add('insane', 'projectile');
+    contextElement.appendChild(temp);
+    temp.addEventListener('mouseenter', ()=>{
+        health -= 10;
+        setHealth(health);
+        screenShake();
+    });
+    return temp;
+}
+
+function changeTextSmoothly(element, newText) {
+    element.classList.remove('visible');
+    setTimeout(() => {
+        element.textContent = newText;
+        element.classList.add('visible');
+    }, 500);
+}
+
+function screenShake(duration = 500) {
+    document.body.classList.add('screen-shake');
+    setTimeout(() => {
+        document.body.classList.remove('screen-shake');
+    }, duration);
+}
+
+setTimeout(()=>{
+    anger.classList.add('visible');
+}, 800);
+
+anger.addEventListener('click', () => {
+    moveToPosition(anger, window.innerWidth*0.5, window.innerHeight*0.1, 1000);
+    startGame();
+});
+
+async function horizontal_attack(wait = 800, speed = 30) {
+    temp1 = createProj("85vw", "10vh");
+    temp2 = createProj("85vw", "30vh");
+    temp3 = createProj("85vw", "50vh");
+    temp4 = createProj("85vw", "70vh");
+
+    await new Promise(resolve => setTimeout(resolve, wait*0.1))
+
+    // Wind back
+    moveToPosition(temp1, window.innerWidth * 0.9, window.innerHeight * 0.1, wait);
+    moveToPosition(temp2, window.innerWidth * 0.9, window.innerHeight * 0.3, wait);
+    moveToPosition(temp3, window.innerWidth * 0.9, window.innerHeight * 0.5, wait);
+    moveToPosition(temp4, window.innerWidth * 0.9, window.innerHeight * 0.7, wait);
+
+    await new Promise(resolve => setTimeout(resolve, wait));
+
+    // Go forward
+    moveUntilOffscreen(temp1, -1 , 0, speed);
+    moveUntilOffscreen(temp2, -1 , 0, speed);
+    moveUntilOffscreen(temp3, -1 , 0, speed);
+    moveUntilOffscreen(temp4, -1 , 0, speed);
+
+    await new Promise(resolve => setTimeout(resolve, (window.innerWidth * 0.9) / speed * 16.67));
+}
+
+async function vertical_attack(wait = 800, speed = 30) {
+    temp1 = createProj("20vw", "15vh");
+    temp2 = createProj("40vw", "15vh");
+    temp3 = createProj("60vw", "15vh");
+    temp4 = createProj("80vw", "15vh");
+
+    await new Promise(resolve => setTimeout(resolve, wait*0.1))
+
+    // Wind back
+    moveToPosition(temp1, window.innerWidth * 0.2, window.innerHeight * 0.1, wait);
+    moveToPosition(temp2, window.innerWidth * 0.4, window.innerHeight * 0.1, wait);
+    moveToPosition(temp3, window.innerWidth * 0.6, window.innerHeight * 0.1, wait);
+    moveToPosition(temp4, window.innerWidth * 0.8, window.innerHeight * 0.1, wait);
+
+    await new Promise(resolve => setTimeout(resolve, wait));
+
+    // Go forward
+    moveUntilOffscreen(temp1, 0, 1, speed);
+    moveUntilOffscreen(temp2, 0, 1, speed);
+    moveUntilOffscreen(temp3, 0, 1, speed);
+    moveUntilOffscreen(temp4, 0, 1, speed);
+
+    await new Promise(resolve => setTimeout(resolve, (window.innerHeight * 0.9) / speed * 16.67));
+}
+
+async function startGame() {
+    document.getElementById('health-container').classList.add('visible');
+    await new Promise(resolve => setTimeout(resolve, 1200));
+
+    // Game logic here
+    changeTextSmoothly(anger, "Here it comes!");
+
+    await new Promise(resolve => setTimeout(resolve, 800));
+
+    await horizontal_attack(800, 30)
+
+    vertical_attack();
+
+
+
+}
+</script>
+{% endblock %}

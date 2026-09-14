@@ -1,120 +1,43 @@
-
-function moveElementWithDecision(id, targetX, targetY, duration, keepGoing = false, yesFn = (()=>{}), noFn = (()=>{})){
-    let element = document.getElementById(id);
-    console.log(window.getComputedStyle(element).height)
-    let style = window.getComputedStyle(element)
-    
-  const startX = parseFloat(style.left) ;
-  const startY = parseFloat(style.top) ;
+function moveToPosition(element, targetX, targetY, duration = 1000) {
+  const computed = window.getComputedStyle(element);
+  const startX = parseFloat(computed.left) || 0;
+  const startY = parseFloat(computed.top) || 0;
   const deltaX = targetX - startX;
   const deltaY = targetY - startY;
-
   const startTime = performance.now();
 
-  // Easing function for natural acceleration/deceleration
-    function easeInCubic(t) {
-    return t * t * t;
-    }
-
-    function easeInCubicDerivative(t) {
-  return 3 * t * t;
-}
-
   function animate(time) {
-    let elapsed = (time - startTime) / duration;
-    if (elapsed > 1) elapsed = 1;
-
-    const progress = easeInCubic(elapsed);
+    const elapsed = Math.min((time - startTime) / duration, 1);
+    const progress = elapsed * elapsed * elapsed; // easeInCubic
 
     element.style.left = startX + deltaX * progress + "px";
     element.style.top = startY + deltaY * progress + "px";
 
-    if (elapsed < 1) {
-      requestAnimationFrame(animate);
-    } else {
-      // Reached target point
-      if (keepGoing) {
-        yesFn();
-      } else {
-        // Stop and remove immediately
-        noFn();
-      }
-    }
+    if (elapsed < 1) requestAnimationFrame(animate);
   }
 
   requestAnimationFrame(animate);
 }
 
-function moveElementWithDeletion(id, targetX, targetY, duration, keepGoing = false){
-    let element = document.getElementById(id);
-    console.log(window.getComputedStyle(element).height)
-    let style = window.getComputedStyle(element)
-    
-  const startX = parseFloat(style.left) ;
-  const startY = parseFloat(style.top) ;
-  const deltaX = targetX - startX;
-  const deltaY = targetY - startY;
+function moveUntilOffscreen(element, dirX, dirY, speed = 5) {
+  function step() {
+    const computed = window.getComputedStyle(element);
+    const currentX = parseFloat(computed.left) || 0;
+    const currentY = parseFloat(computed.top) || 0;
 
-  const startTime = performance.now();
+    element.style.left = currentX + dirX * speed + "px";
+    element.style.top = currentY + dirY * speed + "px";
 
-  // Easing function for natural acceleration/deceleration
-    function easeInCubic(t) {
-    return t * t * t;
-    }
-
-    function easeInCubicDerivative(t) {
-  return 3 * t * t;
-}
-
-  function animate(time) {
-    let elapsed = (time - startTime) / duration;
-    if (elapsed > 1) elapsed = 1;
-
-    const progress = easeInCubic(elapsed);
-
-    element.style.left = startX + deltaX * progress + "px";
-    element.style.top = startY + deltaY * progress + "px";
-
-    if (elapsed < 1) {
-      requestAnimationFrame(animate);
-    } else {
-      // Reached target point
-      if (keepGoing) {
-        keepMovingOffScreen(element, deltaX, deltaY)
-      } else {
-        // Stop and remove immediately
-        element.remove()
-      }
-    }
-  }
-
-  requestAnimationFrame(animate);
-}
-
-function keepMovingOffScreen(element, dirX, dirY, speed = 5) {
-     // pixels per frame
-  const step = () => {
-    let currentX = parseFloat(element.style.left);
-    let currentY = parseFloat(element.style.top);
-
-    element.style.left = currentX + Math.sign(dirX) * speed + "px";
-    element.style.top = currentY + Math.sign(dirY) * speed + "px";
-
-    // Get screen bounds
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
-
-    // If completely off screen, remove it
     if (
-      currentX < -50 || currentX > screenWidth + 50 ||
-      currentY < -50 || currentY > screenHeight + 50
+      currentX < -100 || currentX > window.innerWidth + 100 ||
+      currentY < -100 || currentY > window.innerHeight + 100
     ) {
       element.remove();
       return;
     }
 
     requestAnimationFrame(step);
-  };
+  }
 
   requestAnimationFrame(step);
 }

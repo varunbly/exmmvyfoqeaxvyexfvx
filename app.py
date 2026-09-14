@@ -1,12 +1,6 @@
-from ast import Dict
-from operator import methodcaller
-from urllib import response
-import os
-from dotenv import load_dotenv
 from flask import Flask, jsonify, request, render_template, url_for, make_response
 import base64
 from supabase import create_client
-import json
 app = Flask(__name__)
 app.config.from_prefixed_env()
 supabase = create_client(app.config["SUPABASE_URL"], app.config["SUPABASE_SECRET_KEY"])
